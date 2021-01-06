@@ -1,11 +1,9 @@
 <template>
   <div class="Vclockinfail">
     <img id="checkinf" alt="checkinf" src="../assets/clockinfail.png" />
-
     <div>
       <p class="alert">นั่นแน่ จะลักไก่เหรอ!!!!! เราเห็นน้า</p>
     </div>
-
     <div>
       <button class="conbutton">Continue</button>
     </div>

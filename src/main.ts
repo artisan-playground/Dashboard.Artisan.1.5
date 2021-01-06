@@ -1,14 +1,13 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
-// import VueMapbox from "vue-mapbox";
-// import Mapbox from "mapbox-gl";
 import 'ant-design-vue/dist/antd.css';
 import {
   Button,
   Tabs,
   DatePicker,
   Calendar,
+  Modal
 } from 'ant-design-vue';
 
   const app = createApp(App);
@@ -16,6 +15,6 @@ import {
   app.use(Calendar);
   app.use(Button);
   app.use(Tabs);
+  app.use(Modal);
   app.use(router);
-  // app.use(VueMapbox, { mapboxgl: Mapbox })
   app.mount('#app');

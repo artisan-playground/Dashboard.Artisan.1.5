@@ -11,7 +11,6 @@
       <p class="text2">Bill Gates</p>
     </div>
 
-    <div></div>
   </div>
 </template>
 
