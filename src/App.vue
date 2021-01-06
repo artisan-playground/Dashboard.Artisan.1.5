@@ -4,8 +4,6 @@
     <router-link to="/Vatslogin">Atslogin</router-link> |
     <router-link to="/Upper">Upper</router-link> |
     <router-link to="/Vatsclockout">Atsclockout</router-link> |
-    <router-link to="/Vclockinfail">Clockinfail</router-link> |
-    <router-link to="/Vclockinsuccess">Clockinsuccess</router-link> |
     <router-link to="/Vrequest">Request</router-link> |
     <router-link to="/Vleaveform">Leaveform</router-link> |
     <router-link to="/Clockin">Clockin</router-link>

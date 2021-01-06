@@ -3,8 +3,7 @@ import Home from "../views/Home.vue";
 import Upper from "../views/Upper.vue";
 import Vatslogin from "../views/Vatslogin.vue";
 import Vatsclockout from "../views/Vatsclockout.vue";
-import Vclockinfail from "../views/Vclockinfail.vue";
-import Vclockinsuccess from "../views/Vclockinsuccess.vue";
+
 import Vrequest from "../views/Vrequest.vue";
 import Vleaveform from "../views/Vleaveform.vue";
 import Clockin from "../views/Clockin.vue"
@@ -34,16 +33,6 @@ const routes: Array<RouteRecordRaw> = [
     path: "/Vatsclockout",
     name: "Vatsclockout",
     component: Vatsclockout
-  },
-  {
-    path: "/Vclockinfail",
-    name: "Vclockinfail",
-    component: Vclockinfail
-  },
-  {
-    path: "/Vclockinsuccess",
-    name: "Vclockinsuccess",
-    component: Vclockinsuccess
   },
   {
     path: "/Vrequest",
