@@ -265,10 +265,14 @@ export default defineComponent({
     },
     notify(){
       this.visible = true;
+      setTimeout(() => {
+        location.href = "https://line.me/R/ti/p/%40886oreka"
+      }, 5000);
     },
 
     handleCancel(e: object) {
       this.visible = false;
+      location.href = "https://line.me/R/ti/p/%40886oreka"
 
     },
     setIntervalClockin() {
@@ -298,7 +302,6 @@ export default defineComponent({
   font-family: Anuphan;
   src: url('../fonts/Anuphan-Regular.woff') format('woff');
 }
-
 body,html{
   font-family: 'Anuphan', sans-serif;
 }
@@ -326,7 +329,9 @@ body,html{
   color: #105EFB;
   border-radius: 2px;
 }
-
+.ant-modal-footer{
+  display: none !important;
+}
 
 
 </style>

@@ -1,13 +1,5 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/Vatslogin">Atslogin</router-link> |
-    <router-link to="/Upper">Upper</router-link> |
-    <router-link to="/Vatsclockout">Atsclockout</router-link> |
-    <router-link to="/Vrequest">Request</router-link> |
-    <router-link to="/Vleaveform">Leaveform</router-link> |
-    <router-link to="/Clockin">Clockin</router-link>
-  </div>
+
   <router-view />
 </template>
 

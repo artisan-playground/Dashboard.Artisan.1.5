@@ -36,12 +36,12 @@
     </div>
     <div class="box">
       <p class="text"><font color="red">* </font>เหตุผลการลา</p>
-      <textarea
+      <a-textarea
         class="box1"
         name="leave"
         v-model="leave"
         placeholder="เขียนข้อความ"
-      ></textarea>
+      ></a-textarea>
     </div>
     <div class="box">
       <p class="text">แนบเอกสาร</p>
@@ -56,7 +56,7 @@
       </div>
     </div>
     <div class="box">
-      <button class="button" @click="request()">ส่ง</button>
+      <a-button class="button" @click="request()">ส่ง</a-button>
     </div>
   </div>
 </template>
@@ -74,24 +74,24 @@ export default {
       startValue: null,
       endValue: null,
       endOpen: false,
+      option: "",
+      leave: "",
     };
   },
-  watch: {
-    startValue(val) {
-      console.log("startValue", val);
-    },
-    endValue(val) {
-      console.log("endValue", val);
-    },
-  },
+  // watch: {
+  //   startValue(val) {
+  //     console.log("startValue", val);
+  //   },
+  //   endValue(val) {
+  //     console.log("endValue", val);
+  //   },
+  // },
   methods: {
     onChangeStartDate(date, dateString) {
       this.startValue = dayjs(date).format("YYYY-MM-DD HH:mm:ss");
-      console.log(this.startValue);
     },
     onChangeEndDate(date, dateString) {
       this.endValue = dayjs(date).format("YYYY-MM-DD HH:mm:ss");
-      console.log(this.endValue);
     },
     disabledStartDate(startValue) {
       const endValue = this.endValue;
@@ -107,7 +107,6 @@ export default {
       }
       return startValue.valueOf() >= endValue.valueOf();
     },
-
     previewFile(file) {
       console.log("Your upload file:", file);
       // Your process logic. Here we just mock to the same file
@@ -118,41 +117,37 @@ export default {
         .then((res) => res.json())
         .then(({thumbnail}) => thumbnail);
     },
-    setup() {
-      const option = ref("");
-      const startValue = ref("");
-      const endValue = ref("");
-      const leave = ref("");
-
-      function request() {
-        axios
-          .post(`http://172.16.3.33:8100/api/request`, {
-            Leavetype: option.value,
-            Since: startValue.value,
-            Until: endValue.value,
-            Leaveevent: leave.value,
-          })
-          .then(function (response) {
-            console.log(response.data.responseBody);
-            console.log(response.data.responseCode);
-            if (response.data.responseCode === 200) {
-              alert(response.data.message);
-            } else {
-              alert("Success");
-            }
-          })
-          .catch(function (error) {
-            alert(error);
-          });
-      }
-      return {
-        option,
-        startValue,
-        endValue,
-        leave,
-        request,
+    request() {
+      const payload = {
+        Leavetype: this.option,
+        Since: this.startValue,
+        Until: this.endValue,
+        Leaveevent: this.leave,
       };
+      console.log(payload);
+      axios
+        .post(`http://172.16.3.33:8100/api/request`, payload)
+        .then(function (response) {
+          console.log(response.data.responseBody);
+          console.log(response.data.responseCode);
+          if (response.data.responseCode === 200) {
+            alert(response.data.message);
+          } else {
+            alert("Success");
+          }
+        })
+        .catch(function (error) {
+          alert(error);
+        });
     },
+    //   return {
+    //     option,
+    //     startValue,
+    //     endValue,
+    //     leave,
+    //     request,
+    //   };
+    // },
   },
   callback(key) {
     console.log(key);

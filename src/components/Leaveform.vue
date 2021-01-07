@@ -10,12 +10,12 @@
     </div>
     <router-link to="Vonleave">
       <div class="box">
-        <button class="button1" @click="Sick()">ลาป่วย</button>
+        <a-button class="button1" @click="Sick()">ลาป่วย</a-button>
       </div>
     </router-link>
     <router-link to="Vonleave">
       <div class="box">
-        <button class="button2" @click="Stop()">ลากิจ</button>
+        <a-button class="button2" @click="Stop()">ลากิจ</a-button>
       </div>
     </router-link>
   </div>

@@ -35,28 +35,19 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const email = ref(""); //1.stateภายในcomponentไม่มีใครเห็น
-    // const password = ref('')
-    //const store = useStore()
+    const email = ref(""); 
     const user = computed(() => store.state.user);
-    //const {user} = store.state
-    // const idline = this.props.id
-    console.log(props.id);
-    console.log(email);
 
     function Signin() {
       console.log(props.id);
 
       axios
-        .post(`http://172.16.3.33:8100/api/checkuser`, {
+        .post(`http://192.168.1.18:8100/api/checkuser`, {
           username: email.value,
-          lineId: props.id,
+          UserlineId: props.id,
         })
         .then(function (response) {
           console.log(email.value);
-
-          console.log(response.data.responseBody);
-          console.log(response.data.responseCode);
           if (response.data.responseCode === 200) {
             alert("Send to Email Success");
           } else {
@@ -83,7 +74,10 @@ export default defineComponent({
 </script>
 <style scoped>
 .demo {
+  text-align: center;
+  height: 100vh;
   background-image: url(../assets/piclogin.png);
+  /* background-size: 100vh; */
   background-repeat: no-repeat;
   background-position: bottom;
   background-attachment: fixed;
@@ -112,10 +106,10 @@ export default defineComponent({
   width: 500px;
   height: 37px;
   border-radius: 2px;
-  background-color: #134f83;
+  background-color: #134F83;
   color: rgb(255, 255, 255);
   box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.043);
-  border: 2px solid #d3ecfd;
+  border: 2px solid #D3ECFD;
   border-radius: 2px;
   margin-left: 16px;
   margin-right: 16px;
@@ -127,7 +121,7 @@ h1 {
   line-height: 23px;
   text-align: center;
   margin-bottom: 20px;
-  color: #134f83;
+  color: #134F83;
 }
 #em {
   position: static;
@@ -151,7 +145,7 @@ h1 {
   background-size: 20px 20px;
   background-repeat: no-repeat;
   background-position: 7px 4px;
-  border: 1px solid #d9d9d9;
+  border: 1px solid #D9D9D9;
   box-sizing: border-box;
   border-radius: 2px;
   padding-left: 33px;
@@ -174,15 +168,15 @@ h1 {
   font-weight: normal;
   font-size: 14px;
   line-height: 30px;
-  color: #4f4f4f;
+  color: #4F4F4F;
   flex: none;
   order: 1;
   flex-grow: 0;
   margin: 0px -10px;
-  border: 1px solid #d9d9d9;
+  border: 1px solid #D9D9D9;
   box-sizing: border-box;
   border-radius: 2px;
-  background: #f5f5f5;
+  background: #F5F5F5;
 }
 #pic1 {
   position: absolute;
