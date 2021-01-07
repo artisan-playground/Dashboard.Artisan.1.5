@@ -1,43 +1,58 @@
 <template>
   <div>
-    <div>
+    <div >
       <a-modal
-        :visible="visibleSuccess"
+        :visible="visible"
         :confirm-loading="confirmLoading"
         @cancel="handleCancel"
       >
-        <div class="Vclockinsuccess">
-          <img id="clockinpic" alt="clockinpic" src="../assets/clockinsc.png" />
-
-          <h1>Check in</h1>
-
-          <div>
-            <p class="text1">
-              Success is a lousy teacher. I seduces smart people into thinking
-              they can't lose.
-            </p>
-            <p class="text2">Bill Gates</p>
+        <div v-if="approveClockin === 'approved'" class="Vclockinsuccess">
+          <div style="width:100%">
+            <img id="clockinpic" alt="clockinpic" src="../assets/clockinsc.png" style="width: initial;" />
+          </div>
+          
+          <div style="text-align:center; width: 100%;">
+            <h1>Check in</h1>
+            <div >
+              <div v-if="content === 0">
+                <p class="content1" >
+                Success is a lousy teacher. I seduces smart people into thinking
+                they can't lose.
+              </p>
+              <p class="content2">Bill Gates</p>
+              </div>
+              
+              <div v-else-if="content === 1">
+                <p class="content1" >
+                The only way to do great work is to love what you do.
+              </p>
+              <p class="content2">Steve Jobs</p>
+              </div>
+              
+            </div>
           </div>
         </div>
+        <div v-else-if="approveClockin === 'notapproved'" class="Vclockinfail">
+          <div style="width:100%">
+            <img id="checkinf" alt="checkinf" src="../assets/clockinfail.png" style="width: initial;" />
+          </div>
+          
+          <div style="text-align:center;">
+            <div style="padding: 15px;">
+              <p class="alert-content">นั่นแน่ จะลักไก่เหรอ!!!!! เราเห็นน้า</p>
+            </div>
+            <div>
+              <button class="content-button" @click="handleCancel">Continue</button>
+            </div>
+          </div>
+          
+        </div>
+
       </a-modal>
 
-      <a-modal
-        :visible="visibleFailed"
-        :confirm-loading="confirmLoading"
-        @cancel="handleCancel"
-      >
-        <div class="Vclockinfail">
-          <img id="checkinf" alt="checkinf" src="../assets/clockinfail.png" />
-          <div>
-            <p class="alert">นั่นแน่ จะลักไก่เหรอ!!!!! เราเห็นน้า</p>
-          </div>
-          <div>
-            <button class="conbutton" @click="handleCancel">Continue</button>
-          </div>
-        </div>
-      </a-modal>
+
     </div>
-    <div id="mapContainer" class="basemap"></div>
+    <div id="mapContainer" class="basemap" :style="`height:${calHeigth}px !important`"></div>
   </div>
 </template>
 
@@ -52,10 +67,11 @@ export default defineComponent({
   data: () => ({
     calHeigth: 0 as number,
     calWidth: 0 as number,
-    visibleFailed: false,
-    visibleSuccess: false,
+    approveClockin: "" as string,
+    visible: false,
     interval: undefined as any,
     counter: 0 as number,
+    content:0 as number,
     positionUser: {
       lat: 0 as number,
       lng: 0 as number,
@@ -101,13 +117,20 @@ export default defineComponent({
       });
 
       const markerCompany = new mapboxgl.Marker({
-        color: "#000",
+        color: "#E10101",
       })
         .setLngLat([positionCompany.lngCompany, positionCompany.latCompany])
         .addTo(map);
 
-      const markerUser = new mapboxgl.Marker({
-        color: "#87D775",
+       const trainStationIcon = document.createElement('div');
+        trainStationIcon.style.width = '55px';
+        trainStationIcon.style.height = '55px';
+        trainStationIcon.style.backgroundImage = "url(https://img.icons8.com/plasticine/50/000000/street-view.png)";
+
+
+      const markerUser = new mapboxgl.Marker(trainStationIcon,{
+        anchor: 'bottom',
+        offset: [0, 6]
       })
         .setLngLat([positionUser.lngUser, positionUser.latUser])
         .addTo(map);
@@ -158,7 +181,7 @@ export default defineComponent({
           },
           paint: {
             "line-color": "#888",
-            "line-width": 5,
+            "line-width": 3,
           },
         });
         map.addLayer({
@@ -176,7 +199,7 @@ export default defineComponent({
             "circle-color": "#FF0000",
             "circle-stroke-width": 1,
             "circle-stroke-color": "#00bf7c",
-            "circle-opacity": 0.4,
+            "circle-opacity": 0.2,
           },
           filter: ["==", "modelId", 1],
         });
@@ -213,20 +236,22 @@ export default defineComponent({
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
       const dist = R * c; // in metres
 
+
       const queryString = window.location.search;
       const urlParams = new URLSearchParams(queryString);
 
       if (dist < 100) {
-        this.visibleSuccess = true;
+        this.approveClockin = "approved";
         const result = {
           id: `${urlParams.get("id")}`,
           distance: Math.ceil(dist),
-          massage: "จะลักไก่หรอออ อย่านะ จุบุ",
           responeCode: 204,
         };
 
+        this.content = Math.floor(Math.random() * 2);
+
         axios
-          .post("http://192.168.1.1:8100/api/clockin", result)
+          .post("http://192.168.1.18:8100/api/clockin", result)
           .then((response) => {
             console.log("response: ", response);
           })
@@ -234,13 +259,17 @@ export default defineComponent({
             console.error(err);
           });
       } else {
-        this.visibleFailed = true;
+        this.approveClockin = "notapproved";
       }
+      this.notify()
+    },
+    notify(){
+      this.visible = true;
     },
 
     handleCancel(e: object) {
-      this.visibleFailed = false;
-      this.visibleSuccess = false;
+      this.visible = false;
+
     },
     setIntervalClockin() {
       this.interval = setInterval(() => {
@@ -259,14 +288,45 @@ export default defineComponent({
     this.calHeigth = window.innerHeight;
     this.calWidth = window.innerWidth;
     this.getLocation();
-    setTimeout(() => this.setIntervalClockin(), 2000);
+    setTimeout(() => this.setIntervalClockin(), 1500);
   },
 });
 </script>
 
 <style scoped>
-.basemap {
-  width: 100%;
-  height: 100vh;
+@font-face {
+  font-family: Anuphan;
+  src: url('../fonts/Anuphan-Regular.woff') format('woff');
 }
+
+body,html{
+  font-family: 'Anuphan', sans-serif;
+}
+.Vclockinsuccess, .Vclockinfail{
+  height: fit-content;
+  width: fit-content;
+  padding: 5px;
+  width: 100%;
+  text-align: center;
+  font-family: 'Anuphan', sans-serif;
+
+}
+.alert-content{
+  
+  font-weight: bold;
+}
+.content-button{
+
+  width: 35%;
+  font-size: inherit;
+  padding: 5px 10px;
+  background: none;
+  border: 1px solid #0036C7;
+  box-sizing: border-box;
+  color: #105EFB;
+  border-radius: 2px;
+}
+
+
+
 </style>

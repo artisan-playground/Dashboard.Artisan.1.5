@@ -64,9 +64,10 @@ export default {
     const problem = ref("");
     const project = ref("");
     const tasks = ref("");
+
     function clockout() {
       axios
-        .post(`http://172.16.3.33:8100/api/clockout`, {
+        .post(`http://192.168.1.18:8100/api/clockout`, {
           Today: today.value,
           Tomorrow: tomorrow.value,
           Issue: problem.value,
