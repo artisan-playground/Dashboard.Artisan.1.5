@@ -4,13 +4,12 @@
   </div>
 </template>
 <script lang="ts">
-// import { defineComponent } from 'vue';
 import Request from "../components/Request.vue";
 
 export default {
   name: "Vrequest",
   components: {
-    Request
-  }
+    Request,
+  },
 };
 </script>

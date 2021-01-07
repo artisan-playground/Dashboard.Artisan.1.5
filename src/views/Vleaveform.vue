@@ -4,7 +4,6 @@
   </div>
 </template>
 <script lang="ts">
-// import { defineComponent } from 'vue';
 import Leaveform from "../components/Leaveform.vue";
 
 export default {

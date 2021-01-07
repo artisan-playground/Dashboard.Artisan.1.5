@@ -62,11 +62,11 @@
 </template>
 
 <script>
-import {defineComponent} from "vue";
-import {computed, ref} from "vue";
+import { defineComponent } from "vue";
+import { computed, ref } from "vue";
 import store from "../store";
 import axios from "axios";
-import {useRoute} from "vue-router";
+import { useRoute } from "vue-router";
 import dayjs from "dayjs";
 export default {
   data() {
@@ -115,7 +115,7 @@ export default {
         body: file,
       })
         .then((res) => res.json())
-        .then(({thumbnail}) => thumbnail);
+        .then(({ thumbnail }) => thumbnail);
     },
     request() {
       const payload = {
@@ -127,7 +127,7 @@ export default {
       console.log(payload);
       axios
         .post(`http://172.16.3.33:8100/api/request`, payload)
-        .then(function (response) {
+        .then(function(response) {
           console.log(response.data.responseBody);
           console.log(response.data.responseCode);
           if (response.data.responseCode === 200) {
@@ -136,7 +136,7 @@ export default {
             alert("Success");
           }
         })
-        .catch(function (error) {
+        .catch(function(error) {
           alert(error);
         });
     },

@@ -10,21 +10,17 @@
       <div class="flex-col">
         <button class="button" @click="Signin()">Sign in</button>
       </div>
-      <div>
-
-      </div>
+      <div></div>
     </div>
-
   </div>
 </template>
 
 <script lang="ts">
-import {computed, ref} from "vue";
+import { computed, ref } from "vue";
 import store from "../store";
 import axios from "axios";
-import {useRoute} from "vue-router";
-import {defineComponent} from "vue";
-
+import { useRoute } from "vue-router";
+import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "Atslogin",
@@ -35,7 +31,7 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const email = ref(""); 
+    const email = ref("");
     const user = computed(() => store.state.user);
 
     function Signin() {
@@ -46,7 +42,7 @@ export default defineComponent({
           username: email.value,
           UserlineId: props.id,
         })
-        .then(function (response) {
+        .then(function(response) {
           console.log(email.value);
           if (response.data.responseCode === 200) {
             alert("Send to Email Success");
@@ -54,14 +50,14 @@ export default defineComponent({
             alert("Not found Email");
           }
         })
-        .catch(function (error) {
+        .catch(function(error) {
           alert(error);
         });
       // console.log(uuser.value,pass.value)
       // store.commit('setUser',{username: username.value })
       // console.log('')
       // state ที่ไม่ใช่แม่กับลูก
-      store.state.user = {email: email.value};
+      store.state.user = { email: email.value };
     }
     return {
       email,
@@ -106,10 +102,10 @@ export default defineComponent({
   width: 500px;
   height: 37px;
   border-radius: 2px;
-  background-color: #134F83;
+  background-color: #134f83;
   color: rgb(255, 255, 255);
   box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.043);
-  border: 2px solid #D3ECFD;
+  border: 2px solid #d3ecfd;
   border-radius: 2px;
   margin-left: 16px;
   margin-right: 16px;
@@ -121,7 +117,7 @@ h1 {
   line-height: 23px;
   text-align: center;
   margin-bottom: 20px;
-  color: #134F83;
+  color: #134f83;
 }
 #em {
   position: static;
@@ -145,7 +141,7 @@ h1 {
   background-size: 20px 20px;
   background-repeat: no-repeat;
   background-position: 7px 4px;
-  border: 1px solid #D9D9D9;
+  border: 1px solid #d9d9d9;
   box-sizing: border-box;
   border-radius: 2px;
   padding-left: 33px;
@@ -168,15 +164,15 @@ h1 {
   font-weight: normal;
   font-size: 14px;
   line-height: 30px;
-  color: #4F4F4F;
+  color: #4f4f4f;
   flex: none;
   order: 1;
   flex-grow: 0;
   margin: 0px -10px;
-  border: 1px solid #D9D9D9;
+  border: 1px solid #d9d9d9;
   box-sizing: border-box;
   border-radius: 2px;
-  background: #F5F5F5;
+  background: #f5f5f5;
 }
 #pic1 {
   position: absolute;

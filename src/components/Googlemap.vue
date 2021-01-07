@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div >
+    <div>
       <a-modal
         :visible="visible"
         :confirm-loading="confirmLoading"
@@ -8,51 +8,62 @@
       >
         <div v-if="approveClockin === 'approved'" class="Vclockinsuccess">
           <div style="width:100%">
-            <img id="clockinpic" alt="clockinpic" src="../assets/clockinsc.png" style="width: initial;" />
+            <img
+              id="clockinpic"
+              alt="clockinpic"
+              src="../assets/clockinsc.png"
+              style="width: initial;"
+            />
           </div>
-          
+
           <div style="text-align:center; width: 100%;">
             <h1>Check in</h1>
-            <div >
+            <div>
               <div v-if="content === 0">
-                <p class="content1" >
-                Success is a lousy teacher. I seduces smart people into thinking
-                they can't lose.
-              </p>
-              <p class="content2">Bill Gates</p>
+                <p class="content1">
+                  Success is a lousy teacher. I seduces smart people into
+                  thinking they can't lose.
+                </p>
+                <p class="content2">Bill Gates</p>
               </div>
-              
+
               <div v-else-if="content === 1">
-                <p class="content1" >
-                The only way to do great work is to love what you do.
-              </p>
-              <p class="content2">Steve Jobs</p>
+                <p class="content1">
+                  The only way to do great work is to love what you do.
+                </p>
+                <p class="content2">Steve Jobs</p>
               </div>
-              
             </div>
           </div>
         </div>
         <div v-else-if="approveClockin === 'notapproved'" class="Vclockinfail">
           <div style="width:100%">
-            <img id="checkinf" alt="checkinf" src="../assets/clockinfail.png" style="width: initial;" />
+            <img
+              id="checkinf"
+              alt="checkinf"
+              src="../assets/clockinfail.png"
+              style="width: initial;"
+            />
           </div>
-          
+
           <div style="text-align:center;">
             <div style="padding: 15px;">
               <p class="alert-content">นั่นแน่ จะลักไก่เหรอ!!!!! เราเห็นน้า</p>
             </div>
             <div>
-              <button class="content-button" @click="handleCancel">Continue</button>
+              <button class="content-button" @click="handleCancel">
+                Continue
+              </button>
             </div>
           </div>
-          
         </div>
-
       </a-modal>
-
-
     </div>
-    <div id="mapContainer" class="basemap" :style="`height:${calHeigth}px !important`"></div>
+    <div
+      id="mapContainer"
+      class="basemap"
+      :style="`height:${calHeigth}px !important`"
+    ></div>
   </div>
 </template>
 
@@ -71,7 +82,7 @@ export default defineComponent({
     visible: false,
     interval: undefined as any,
     counter: 0 as number,
-    content:0 as number,
+    content: 0 as number,
     positionUser: {
       lat: 0 as number,
       lng: 0 as number,
@@ -122,15 +133,15 @@ export default defineComponent({
         .setLngLat([positionCompany.lngCompany, positionCompany.latCompany])
         .addTo(map);
 
-       const trainStationIcon = document.createElement('div');
-        trainStationIcon.style.width = '55px';
-        trainStationIcon.style.height = '55px';
-        trainStationIcon.style.backgroundImage = "url(https://img.icons8.com/plasticine/50/000000/street-view.png)";
+      const trainStationIcon = document.createElement("div");
+      trainStationIcon.style.width = "55px";
+      trainStationIcon.style.height = "55px";
+      trainStationIcon.style.backgroundImage =
+        "url(https://img.icons8.com/plasticine/50/000000/street-view.png)";
 
-
-      const markerUser = new mapboxgl.Marker(trainStationIcon,{
-        anchor: 'bottom',
-        offset: [0, 6]
+      const markerUser = new mapboxgl.Marker(trainStationIcon, {
+        anchor: "bottom",
+        offset: [0, 6],
       })
         .setLngLat([positionUser.lngUser, positionUser.latUser])
         .addTo(map);
@@ -236,7 +247,6 @@ export default defineComponent({
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
       const dist = R * c; // in metres
 
-
       const queryString = window.location.search;
       const urlParams = new URLSearchParams(queryString);
 
@@ -261,19 +271,18 @@ export default defineComponent({
       } else {
         this.approveClockin = "notapproved";
       }
-      this.notify()
+      this.notify();
     },
-    notify(){
+    notify() {
       this.visible = true;
       setTimeout(() => {
-        location.href = "https://line.me/R/ti/p/%40886oreka"
+        location.href = "https://line.me/R/ti/p/%40886oreka";
       }, 5000);
     },
 
     handleCancel(e: object) {
       this.visible = false;
-      location.href = "https://line.me/R/ti/p/%40886oreka"
-
+      location.href = "https://line.me/R/ti/p/%40886oreka";
     },
     setIntervalClockin() {
       this.interval = setInterval(() => {
@@ -300,38 +309,35 @@ export default defineComponent({
 <style scoped>
 @font-face {
   font-family: Anuphan;
-  src: url('../fonts/Anuphan-Regular.woff') format('woff');
+  src: url("../fonts/Anuphan-Regular.woff") format("woff");
 }
-body,html{
-  font-family: 'Anuphan', sans-serif;
+body,
+html {
+  font-family: "Anuphan", sans-serif;
 }
-.Vclockinsuccess, .Vclockinfail{
+.Vclockinsuccess,
+.Vclockinfail {
   height: fit-content;
   width: fit-content;
   padding: 5px;
   width: 100%;
   text-align: center;
-  font-family: 'Anuphan', sans-serif;
-
+  font-family: "Anuphan", sans-serif;
 }
-.alert-content{
-  
+.alert-content {
   font-weight: bold;
 }
-.content-button{
-
+.content-button {
   width: 35%;
   font-size: inherit;
   padding: 5px 10px;
   background: none;
-  border: 1px solid #0036C7;
+  border: 1px solid #0036c7;
   box-sizing: border-box;
-  color: #105EFB;
+  color: #105efb;
   border-radius: 2px;
 }
-.ant-modal-footer{
+.ant-modal-footer {
   display: none !important;
 }
-
-
 </style>

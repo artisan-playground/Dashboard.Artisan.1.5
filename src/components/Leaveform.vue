@@ -3,7 +3,11 @@
     <div class="box">
       <div
         class="cld"
-        :style="{width: '300px', border: '1px solid #d9d9d9', borderRadius: '4px'}"
+        :style="{
+          width: '300px',
+          border: '1px solid #d9d9d9',
+          borderRadius: '4px',
+        }"
       >
         <a-calendar :fullscreen="false" @panelChange="onPanelChange" />
       </div>
@@ -67,8 +71,8 @@ export default {
   background-image: url("../assets/Group.png");
   background: #ffffff;
   border: none;
-  box-shadow: 0px 9px 28px 8px rgba(0, 0, 0, 0.05), 0px 6px 16px rgba(0, 0, 0, 0.08),
-    0px 3px 6px -4px rgba(0, 0, 0, 0.12);
+  box-shadow: 0px 9px 28px 8px rgba(0, 0, 0, 0.05),
+    0px 6px 16px rgba(0, 0, 0, 0.08), 0px 3px 6px -4px rgba(0, 0, 0, 0.12);
   border-radius: 4px;
 }
 .button2 {
@@ -80,14 +84,14 @@ export default {
   background-image: url("../assets/Groupp.png");
   background: #ffffff;
 
-  box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12), 0px 6px 16px rgba(0, 0, 0, 0.08),
-    0px 9px 21px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12),
+    0px 6px 16px rgba(0, 0, 0, 0.08), 0px 9px 21px 8px rgba(0, 0, 0, 0.05);
   border: none;
 }
 .cld {
   margin-left: 26px;
   background: #ffffff;
-  box-shadow: 0px 1px 0px #f2f2f2, inset 0px 1px 0px #f2f2f2, inset -1px 0px 0px #f2f2f2,
-    inset 1px 0px 0px #f2f2f2;
+  box-shadow: 0px 1px 0px #f2f2f2, inset 0px 1px 0px #f2f2f2,
+    inset -1px 0px 0px #f2f2f2, inset 1px 0px 0px #f2f2f2;
 }
 </style>

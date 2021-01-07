@@ -2,7 +2,7 @@
   <div class="Vatsclockin" id="v-model-textarea">
     <h1>Daily Clock out</h1>
     <div class="atsco">
-      <p class="daily"><font color="red">* </font>วันนี้ทำอะไรบ้าง</p> 
+      <p class="daily"><font color="red">* </font>วันนี้ทำอะไรบ้าง</p>
       <textarea
         class="box"
         name="today"
@@ -30,11 +30,21 @@
     </div>
     <div class="atsco">
       <p class="daily">Projects ที่ทำ</p>
-      <input class="box" name="project" v-model="project" placeholder="ชื่อ Project" />
+      <input
+        class="box"
+        name="project"
+        v-model="project"
+        placeholder="ชื่อ Project"
+      />
     </div>
     <div class="atsco">
       <p class="daily">Tasks ที่ทำในวันนี้</p>
-      <input class="box" name="tasks" v-model="tasks" placeholder="ชื่อ Tasks " />
+      <input
+        class="box"
+        name="tasks"
+        v-model="tasks"
+        placeholder="ชื่อ Tasks "
+      />
     </div>
     <div class="round-button">
       <div class="round-button-circle">
@@ -44,11 +54,11 @@
   </div>
 </template>
 <script lang="ts">
-import {defineComponent} from "vue";
-import {computed, ref} from "vue";
+import { defineComponent } from "vue";
+import { computed, ref } from "vue";
 import store from "../store";
 import axios from "axios";
-import {useRoute} from "vue-router";
+import { useRoute } from "vue-router";
 export default {
   name: "Atsclockout",
   setup() {
@@ -58,25 +68,25 @@ export default {
     const project = ref("");
     const tasks = ref("");
     function clockout() {
-      const quetyString = window.location.search
-      const idLine = new URLSearchParams(quetyString)
+      const quetyString = window.location.search;
+      const idLine = new URLSearchParams(quetyString);
       axios
         .post(`http://192.168.1.18:8100/api/clockout`, {
-          lineId:idLine.get("id"),
+          lineId: idLine.get("id"),
           Today: today.value,
           Tomorrow: tomorrow.value,
           Issue: problem.value,
           Projects: project.value,
           Tasks: tasks.value,
         })
-        .then(function (response) {
+        .then(function(response) {
           if (response.data.responseCode === 200) {
             alert(response.data.message);
           } else {
             alert("Success");
           }
         })
-        .catch(function (error) {
+        .catch(function(error) {
           alert(error);
         });
     }
@@ -102,76 +112,76 @@ export default {
     width: 100%;
   }
 }
-.Vatsclockin{
+.Vatsclockin {
   text-align: center;
   position: relative;
   /* width: 375px;
       height: 812px; */
-  background: #FFFFFF;
+  background: #ffffff;
 }
-.atsco{
-flex-direction: column;
-align-items: flex-start;
-padding: 3px;
-position: static;
+.atsco {
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 3px;
+  position: static;
 }
-textarea.box{
-height: 98px;
-width: 343px;
-left: 0px;
-top: 0px;
-border-radius: 4px;
-padding: 1px, 2px, 1px, 2px;
+textarea.box {
+  height: 98px;
+  width: 343px;
+  left: 0px;
+  top: 0px;
+  border-radius: 4px;
+  padding: 1px, 2px, 1px, 2px;
 }
-textarea::placeholder{
-   text-indent: 0.5em;
-   font-size: 14px;
+textarea::placeholder {
+  text-indent: 0.5em;
+  font-size: 14px;
 }
-input.box{
-height: 32px;
-width: 343px;
-left: 0px;
-top: 30px;
-padding: 1px, 2px, 1px, 2px;
+input.box {
+  height: 32px;
+  width: 343px;
+  left: 0px;
+  top: 30px;
+  padding: 1px, 2px, 1px, 2px;
 }
-input::placeholder{
-   text-indent: 0.5em;
-   font-size: 14px;
+input::placeholder {
+  text-indent: 0.5em;
+  font-size: 14px;
 }
-p.daily{
-font-family: Anuphan;
-font-style: normal;
-font-weight: normal;
-font-size: 16px;
-line-height: 35px;
+p.daily {
+  font-family: Anuphan;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 35px;
 }
 .round-button {
-  width:150px;
+  width: 150px;
   position: relative;
   text-align: center;
   margin-top: 30px;
 }
 .round-button-circle {
-  height:0;
+  height: 0;
   padding-bottom: 100%;
   border-radius: 50%;
-  background: #0036C7; 
+  background: #0036c7;
   box-shadow: 0 0 20px gray;
 }
 .round-button a {
-  display:block;
-  float:left;
+  display: block;
+  float: left;
   left: 0px;
-  width:100%;
-  padding-top:40%;
-  padding-bottom:50%;
-  line-height:1em;
-  margin-top:-0.5em;
-  text-align:center;
-  color:#e2eaf3;
+  width: 100%;
+  padding-top: 40%;
+  padding-bottom: 50%;
+  line-height: 1em;
+  margin-top: -0.5em;
+  text-align: center;
+  color: #e2eaf3;
   font-family: Anuphan;
   font-size: 30px;
-  font-weight:bold;
-  text-decoration:none;
+  font-weight: bold;
+  text-decoration: none;
 }
 </style>
