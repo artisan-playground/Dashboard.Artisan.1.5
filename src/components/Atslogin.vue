@@ -53,15 +53,12 @@ export default defineComponent({
         .catch(function(error) {
           alert(error);
         });
-      // console.log(uuser.value,pass.value)
-      // store.commit('setUser',{username: username.value })
-      // console.log('')
-      // state ที่ไม่ใช่แม่กับลูก
+
       store.state.user = { email: email.value };
     }
     return {
       email,
-      // password,
+
       Signin,
       user,
     };
@@ -73,7 +70,6 @@ export default defineComponent({
   text-align: center;
   height: 100vh;
   background-image: url(../assets/piclogin.png);
-  /* background-size: 100vh; */
   background-repeat: no-repeat;
   background-position: bottom;
   background-attachment: fixed;

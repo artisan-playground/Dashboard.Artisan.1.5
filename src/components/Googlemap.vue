@@ -5,6 +5,7 @@
         :visible="visible"
         :confirm-loading="confirmLoading"
         @cancel="handleCancel"
+        footer=""
       >
         <div v-if="approveClockin === 'approved'" class="Vclockinsuccess">
           <div style="width:100%">
@@ -17,21 +18,37 @@
           </div>
 
           <div style="text-align:center; width: 100%;">
-            <h1>Check in</h1>
+            <h1 style="font-weight: 600;">
+              Check in
+            </h1>
             <div>
               <div v-if="content === 0">
                 <p class="content1">
                   Success is a lousy teacher. I seduces smart people into
                   thinking they can't lose.
                 </p>
-                <p class="content2">Bill Gates</p>
+                <p class="content2" style="color:'#8F8F8F'">Bill Gates</p>
               </div>
 
               <div v-else-if="content === 1">
-                <p class="content1">
+                <p
+                  class="content1"
+                  :style="
+                    `${calWidth > 760 ? `font-size: 20px` : `font-size: 18px`};`
+                  "
+                >
                   The only way to do great work is to love what you do.
                 </p>
-                <p class="content2">Steve Jobs</p>
+                <p
+                  class="content2"
+                  :style="
+                    `${
+                      calWidth > 760 ? `font-size: 18px` : `font-size: 15px`
+                    };color:'#8F8F8F'`
+                  "
+                >
+                  Steve Jobs
+                </p>
               </div>
             </div>
           </div>
@@ -48,7 +65,14 @@
 
           <div style="text-align:center;">
             <div style="padding: 15px;">
-              <p class="alert-content">นั่นแน่ จะลักไก่เหรอ!!!!! เราเห็นน้า</p>
+              <p
+                class="alert-content"
+                :style="
+                  `${calWidth > 760 ? `font-size: 24px` : `font-size: 20px`};`
+                "
+              >
+                นั่นแน่ จะลักไก่เหรอ!!!!! เราเห็นน้า
+              </p>
             </div>
             <div>
               <button class="content-button" @click="handleCancel">
@@ -95,8 +119,8 @@ export default defineComponent({
   methods: {
     getLocation() {
       navigator.geolocation.getCurrentPosition((position) => {
-        this.positionUser.lat = position.coords.latitude;
-        this.positionUser.lng = position.coords.longitude;
+        this.positionUser.lat = 18.78576185133086;
+        this.positionUser.lng = 98.96627524143693;
         this.initMap();
       });
     },
@@ -261,7 +285,7 @@ export default defineComponent({
         this.content = Math.floor(Math.random() * 2);
 
         axios
-          .post("http://192.168.1.18:8100/api/clockin", result)
+          .post("http://192.168.1.6:8100/api/clockin", result)
           .then((response) => {
             console.log("response: ", response);
           })
@@ -298,9 +322,11 @@ export default defineComponent({
   },
 
   mounted() {
+    console.log(process.env);
     this.calHeigth = window.innerHeight;
     this.calWidth = window.innerWidth;
     this.getLocation();
+
     setTimeout(() => this.setIntervalClockin(), 1500);
   },
 });
@@ -327,6 +353,9 @@ html {
 .alert-content {
   font-weight: bold;
 }
+.content1 {
+  color: black;
+}
 .content-button {
   width: 35%;
   font-size: inherit;
@@ -336,8 +365,5 @@ html {
   box-sizing: border-box;
   color: #105efb;
   border-radius: 2px;
-}
-.ant-modal-footer {
-  display: none !important;
 }
 </style>
