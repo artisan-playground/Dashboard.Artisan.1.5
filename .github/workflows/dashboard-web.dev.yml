@@ -26,7 +26,6 @@ jobs:
 
       - name: Build
         run: |
-          cd $SERVICE_NAME
           gcloud builds submit \
           --tag gcr.io/$PROJECT_ID/$SERVICE_NAME:$BRANCH_NAME
 
