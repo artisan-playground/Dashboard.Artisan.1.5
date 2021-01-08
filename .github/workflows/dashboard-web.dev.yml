@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - develop
-    paths:
-      - '*'
 
 env:
   PROJECT_ID: artisan-trypt
