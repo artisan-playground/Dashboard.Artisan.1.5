@@ -107,59 +107,62 @@ export default {
   padding: 0;
   box-sizing: border-box;
 }
-@media screen and (max-width: 340px) {
+@media screen and (max-width: 430px) {
   body {
     width: 100%;
   }
 }
 .Vatsclockin {
-  text-align: center;
   position: relative;
   /* width: 375px;
       height: 812px; */
   background: #ffffff;
+   background-image: url(../assets/time.png);
+  background-repeat: no-repeat;
+  background-position: bottom;
 }
 .atsco {
   flex-direction: column;
-  align-items: flex-start;
   padding: 3px;
   position: static;
+
+
 }
 textarea.box {
-  height: 98px;
-  width: 343px;
-  left: 0px;
-  top: 0px;
-  border-radius: 4px;
-  padding: 1px, 2px, 1px, 2px;
+  height: 15vh;
+  width: 50vh;
+  border-radius: 5px;
 }
 textarea::placeholder {
   text-indent: 0.5em;
   font-size: 14px;
+  font-family: Anuphan;
 }
 input.box {
   height: 32px;
-  width: 343px;
-  left: 0px;
+  width: 50vh;
   top: 30px;
   padding: 1px, 2px, 1px, 2px;
 }
 input::placeholder {
   text-indent: 0.5em;
   font-size: 14px;
+  font-family: Anuphan;
+  font-style: normal;
+  font-weight: normal;
 }
 p.daily {
   font-family: Anuphan;
   font-style: normal;
   font-weight: normal;
   font-size: 16px;
-  line-height: 35px;
+  line-height: 30px;
 }
 .round-button {
-  width: 150px;
-  position: relative;
-  text-align: center;
-  margin-top: 30px;
+     width: 150px;
+    display: inline-block;
+    position: relative;
+    margin-top: 30px;
 }
 .round-button-circle {
   height: 0;
