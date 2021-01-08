@@ -119,8 +119,8 @@ export default defineComponent({
   methods: {
     getLocation() {
       navigator.geolocation.getCurrentPosition((position) => {
-        this.positionUser.lat = 18.78576185133086;
-        this.positionUser.lng = 98.96627524143693;
+        this.positionUser.lat = position.coords.latitude;
+        this.positionUser.lng = position.coords.longitude;
         this.initMap();
       });
     },
@@ -285,7 +285,7 @@ export default defineComponent({
         this.content = Math.floor(Math.random() * 2);
 
         axios
-          .post("http://192.168.1.6:8100/api/clockin", result)
+          .post("http://192.168.1.2:8100/api/clockin", result)
           .then((response) => {
             console.log("response: ", response);
           })
@@ -339,7 +339,7 @@ export default defineComponent({
 }
 body,
 html {
-  font-family: "Anuphan", sans-serif;
+  font-family: Anuphan, sans-serif;
 }
 .Vclockinsuccess,
 .Vclockinfail {
@@ -348,7 +348,7 @@ html {
   padding: 5px;
   width: 100%;
   text-align: center;
-  font-family: "Anuphan", sans-serif;
+  font-family: Anuphan, sans-serif;
 }
 .alert-content {
   font-weight: bold;
