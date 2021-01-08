@@ -6,7 +6,7 @@ on:
       - develop
 
 env:
-  PROJECT_ID: artisan-trypt
+  PROJECT_ID: artisan-playground
   BRANCH_NAME: develop
   RUN_REGION: asia-southeast1
   SERVICE_NAME: dashboard-web-1-5
