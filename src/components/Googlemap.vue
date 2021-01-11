@@ -22,7 +22,16 @@
                   Success is a lousy teacher. I seduces smart people into
                   thinking they can't lose.
                 </p>
-                <p class="content2" style="color:'#8F8F8F'">Bill Gates</p>
+                <p
+                  class="content2"
+                  :style="
+                    `${
+                      calWidth > 760 ? `font-size: 18px` : `font-size: 15px`
+                    };color:'#8F8F8F'`
+                  "
+                >
+                  Bill Gates
+                </p>
               </div>
 
               <div v-else-if="content === 1">
@@ -43,6 +52,16 @@
                   "
                 >
                   Steve Jobs
+                </p>
+              </div>
+
+              <div>
+                <p
+                  :style="
+                    `${calWidth > 760 ? `font-size: 18px` : `font-size: 15px`};`
+                  "
+                >
+                  {{ massageTimeclockin }}
                 </p>
               </div>
             </div>
@@ -95,6 +114,8 @@ import mapboxgl from "mapbox-gl";
 export default defineComponent({
   name: "Googlemap",
   data: () => ({
+    massageTimeclockin: "" as string,
+    timeClockin: "" as string,
     calHeigth: 0 as number,
     calWidth: 0 as number,
     approveClockin: "" as string,
@@ -123,10 +144,6 @@ export default defineComponent({
       const metersToPixelsAtMaxZoom = (meters: number, latitude: number) =>
         meters / 0.075 / Math.cos((latitude * Math.PI) / 180);
 
-      // const positionUser = {
-      //   lngUser: 98.96627524143693,
-      //   latUser: 18.78576185133086,
-      // };
       const positionUser = {
         lngUser: this.positionUser.lng,
         latUser: this.positionUser.lat,
@@ -271,9 +288,12 @@ export default defineComponent({
 
       if (dist < 100) {
         this.approveClockin = "approved";
+        this.calculatTime();
+
         const result = {
           id: `${urlParams.get("id")}`,
           distance: Math.ceil(dist),
+          clockinTime: this.massageTimeclockin,
           responeCode: 204,
         };
 
@@ -291,6 +311,29 @@ export default defineComponent({
         this.approveClockin = "notapproved";
       }
       this.notify();
+    },
+    calculatTime() {
+      const Currenttime = `${new Date().toLocaleDateString()} 9:14:00`;
+      const Clockintime = `${new Date().toLocaleDateString()} 9:15:00`;
+      if (Date.parse(Currenttime) > Date.parse(Clockintime)) {
+        const milliseconds = Date.parse(Currenttime) - Date.parse(Clockintime);
+
+        const hours = milliseconds / (1000 * 60 * 60);
+        const absoluteHours = Math.floor(hours);
+        const h = absoluteHours > 9 ? absoluteHours : "0" + absoluteHours;
+
+        const minutes = (hours - absoluteHours) * 60;
+        const absoluteMinutes = Math.floor(minutes);
+        const m = absoluteMinutes > 9 ? absoluteMinutes : "0" + absoluteMinutes;
+
+        const seconds = (minutes - absoluteMinutes) * 60;
+        const absoluteSeconds = Math.floor(seconds);
+        const s = absoluteSeconds > 9 ? absoluteSeconds : "0" + absoluteSeconds;
+
+        this.massageTimeclockin = `คุณเข้างานสายไป ${h} ชั่วโมง : ${m} นาที : ${s} วินาที `;
+      } else {
+        this.massageTimeclockin = `ดีใจด้วยคุณไม่สายน้าา`;
+      }
     },
     notify() {
       this.visible = true;
@@ -317,7 +360,6 @@ export default defineComponent({
   },
 
   mounted() {
-    console.log(process.env);
     this.calHeigth = window.innerHeight;
     this.calWidth = window.innerWidth;
     this.getLocation();
