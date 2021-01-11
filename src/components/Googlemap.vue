@@ -1,12 +1,7 @@
 <template>
   <div>
     <div>
-      <a-modal
-        :visible="visible"
-        :confirm-loading="confirmLoading"
-        @cancel="handleCancel"
-        footer=""
-      >
+      <a-modal :visible="visible" @cancel="handleCancel" footer="">
         <div v-if="approveClockin === 'approved'" class="Vclockinsuccess">
           <div style="width:100%">
             <img

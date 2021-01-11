@@ -1,5 +1,60 @@
 <template>
   <div class="demo" :style="`height:${calHeigth}px !important`">
+    <a-modal :visible="visible" @cancel="handleCancel" footer="">
+      <div
+        v-if="massageCode === 0"
+        style="text-align: center;font-family: Anuphan;font-size: large;
+    font-weight: bold;padding: 0px 25px;"
+      >
+        <div>
+          <img
+            src="https://img.icons8.com/emoji/48/000000/warning-emoji.png"
+            style="width:10%;float: left;"
+          />กรุณากรอก E-mail ด้วยจ้า
+        </div>
+        <div style="text-align: end;margin-top: 2em;">
+          <a-button type="primary" class="btu-modal" @click="handleCancel">
+            OK
+          </a-button>
+        </div>
+      </div>
+      <div
+        v-if="massageCode === 1"
+        style="text-align: center;font-family: Anuphan;font-size: large;
+    font-weight: bold; "
+      >
+        <div style="margin-top:1em; padding: 0px 20px;">
+          <img
+            src="https://img.icons8.com/cotton/64/000000/checkmark.png"
+            style="width:10%;float: left;"
+          />ลงทะเบียนเรียบร้อยแล้วจ้า
+        </div>
+
+        <div style="text-align: end;margin-top: 2em;">
+          <a-button type="primary" class="btu-modal" @click="signinSuccess">
+            OK
+          </a-button>
+        </div>
+      </div>
+      <div
+        v-if="massageCode === 2"
+        style="text-align: center;font-family: Anuphan;font-size: large;
+    font-weight: bold;"
+      >
+        <div style="margin-top:1em">
+          <img
+            src="https://img.icons8.com/cotton/64/000000/delete-sign--v2.png"
+            style="width:10%;float: left;"
+          />ไม่พบ E-mail ที่กรอกมากรุณาติดต่อ HR
+        </div>
+
+        <div style="text-align: end;margin-top: 2em;">
+          <a-button type="primary" class="btu-modal" @click="handleCancel">
+            OK
+          </a-button>
+        </div>
+      </div>
+    </a-modal>
     <div
       class="flex"
       :style="
@@ -41,7 +96,7 @@
           >
         </div>
         <div class="flex-col" style="margin-top:2em">
-          <button class="button" @click="Signin()">Sign in</button>
+          <button class="button" @click="signIn">Sign in</button>
         </div>
       </div>
     </div>
@@ -49,55 +104,66 @@
 </template>
 
 <script lang="ts">
-import { computed, ref } from "vue";
-import store from "../store";
+import { ref } from "vue";
 import axios from "axios";
 import { useRoute } from "vue-router";
 import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "Atslogin",
-  props: {
-    id: {
-      type: String,
-      required: true,
-    },
-  },
   data: () => ({
     calHeigth: 0 as number,
     calWidth: 0 as number,
+    email: "" as string,
+    visible: false as boolean,
+    massageCode: 0 as number,
+    resultSignin: {},
+    date: "",
   }),
+
+  methods: {
+    signIn: function() {
+      const quetyString = window.location.search;
+      const params = new URLSearchParams(quetyString);
+
+      if (!this.email) {
+        this.notify();
+      } else {
+        return axios
+          .post(`http://192.168.1.20:8100/api/checkuser`, {
+            username: `${this.email}@artisan.co.th`,
+            UserlineId: params.get("id"),
+          })
+          .then((response) => {
+            if (response.data.responseCode === 200) {
+              this.massageCode = 1;
+            } else {
+              this.massageCode = 2;
+            }
+            this.notify();
+          })
+          .catch((error) => {
+            alert(error);
+          });
+      }
+    },
+    signinSuccess() {
+      location.href = "https://line.me/R/ti/p/%40886oreka";
+    },
+    handleCancel(e: object) {
+      this.visible = false;
+    },
+    notify() {
+      this.visible = true;
+    },
+    handleOk(e: object) {
+      console.log(e);
+      this.visible = false;
+    },
+  },
   mounted() {
     this.calHeigth = window.innerHeight;
     this.calWidth = window.innerWidth;
-  },
-
-  setup(props) {
-    const email = ref("");
-    const user = computed(() => store.state.user);
-
-    function Signin() {
-      axios
-        .post(`http://192.168.1.2:8100/api/checkuser`, {
-          username: `${email.value}@artisan.co.th`,
-          UserlineId: props.id,
-        })
-        .then(function(response) {
-          if (response.data.responseCode === 200) {
-            alert("Send to Email Success");
-          } else {
-            alert("Not found Email");
-          }
-        })
-        .catch(function(error) {
-          alert(error);
-        });
-    }
-    return {
-      email,
-      Signin,
-      user,
-    };
   },
 });
 </script>
