@@ -58,7 +58,7 @@
               <div>
                 <p
                   :style="
-                    `${calWidth > 760 ? `font-size: 18px` : `font-size: 15px`};`
+                    `${calWidth > 760 ? `font-size: 16px` : `font-size: 14px`};`
                   "
                 >
                   {{ massageTimeclockin }}
@@ -116,6 +116,7 @@ export default defineComponent({
   name: "Googlemap",
   data: () => ({
     apiconfig: apiConfig.API_BASE_ENDPOINT,
+    statusClockin: "" as string,
     massageTimeclockin: "" as string,
     timeClockin: "" as string,
     calHeigth: 0 as number,
@@ -125,6 +126,10 @@ export default defineComponent({
     interval: undefined as any,
     counter: 0 as number,
     content: 0 as number,
+    idLine: "" as string,
+    clockinTime: "" as string,
+    timeLate: "" as string,
+    clockinHistory: "" as string,
     positionUser: {
       lat: 0 as number,
       lng: 0 as number,
@@ -269,11 +274,11 @@ export default defineComponent({
       const lat2 = this.positionCompany.lat;
       const lon1 = this.positionUser.lng;
       const lon2 = this.positionCompany.lng;
-      const R = 6371e3; // metres
-      const rlat1 = (lat1 * Math.PI) / 180; // φ1
-      const rlat2 = (lat2 * Math.PI) / 180; //φ2
-      const rlat12 = ((lat2 - lat1) * Math.PI) / 180; //Δφ
-      const lonPie = ((lon2 - lon1) * Math.PI) / 180; //Δλ
+      const R = 6371e3;
+      const rlat1 = (lat1 * Math.PI) / 180;
+      const rlat2 = (lat2 * Math.PI) / 180;
+      const rlat12 = ((lat2 - lat1) * Math.PI) / 180;
+      const lonPie = ((lon2 - lon1) * Math.PI) / 180;
 
       const a =
         Math.sin(rlat12 / 2) * Math.sin(rlat12 / 2) +
@@ -283,26 +288,26 @@ export default defineComponent({
           Math.sin(lonPie / 2);
 
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      const dist = R * c; // in metres
-
-      const queryString = window.location.search;
-      const urlParams = new URLSearchParams(queryString);
+      const dist = R * c;
 
       if (dist < 100) {
         this.approveClockin = "approved";
         this.calculatTime();
 
         const result = {
-          id: `${urlParams.get("id")}`,
+          id: this.idLine,
           distance: Math.ceil(dist),
-          clockinTime: this.massageTimeclockin,
-          responeCode: 204,
+          statusClockin: this.statusClockin,
+          clockinHistory: this.clockinHistory,
+          timeLate: this.timeLate,
+          clockinTime: this.clockinTime,
         };
 
-        this.content = Math.floor(Math.random() * 2);
+        console.log(result);
 
+        this.content = Math.floor(Math.random() * 2);
         axios
-          .post("http://192.168.1.2:8100/api/clockin", result)
+          .post(`${this.apiconfig}/api/clockin`, result)
           .then((response) => {
             console.log("response: ", response);
           })
@@ -315,9 +320,19 @@ export default defineComponent({
       this.notify();
     },
     calculatTime() {
-      const Currenttime = `${new Date().toLocaleDateString()} 9:14:00`;
+      const Currenttime = `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
       const Clockintime = `${new Date().toLocaleDateString()} 9:15:00`;
-      if (Date.parse(Currenttime) > Date.parse(Clockintime)) {
+      this.clockinTime = Currenttime;
+
+      if (this.statusClockin === "1") {
+        this.massageTimeclockin = `ดีใจด้วยคุณไม่สายน้าา`;
+        this.timeLate = "00:00:00";
+        this.clockinHistory = "ตรงเวลา";
+      } else if (this.statusClockin === "2") {
+        this.massageTimeclockin = `คุณเข้างานสายนะ !!!!`;
+        this.timeLate = "00:00:00";
+        this.clockinHistory = "สายแต่อยู่ในเวลา";
+      } else if (this.statusClockin === "3") {
         const milliseconds = Date.parse(Currenttime) - Date.parse(Clockintime);
 
         const hours = milliseconds / (1000 * 60 * 60);
@@ -332,9 +347,27 @@ export default defineComponent({
         const absoluteSeconds = Math.floor(seconds);
         const s = absoluteSeconds > 9 ? absoluteSeconds : "0" + absoluteSeconds;
 
+        this.timeLate = `${h}:${m}:${s}`;
+        this.clockinHistory = `สายไป ${h} ชั่วโมง : ${m} นาที : ${s} วินาที `;
         this.massageTimeclockin = `คุณเข้างานสายไป ${h} ชั่วโมง : ${m} นาที : ${s} วินาที `;
-      } else {
-        this.massageTimeclockin = `ดีใจด้วยคุณไม่สายน้าา`;
+      } else if (this.statusClockin === "4") {
+        const milliseconds = Date.parse(Currenttime) - Date.parse(Clockintime);
+
+        const hours = milliseconds / (1000 * 60 * 60);
+        const absoluteHours = Math.floor(hours);
+        const h = absoluteHours > 9 ? absoluteHours : "0" + absoluteHours;
+
+        const minutes = (hours - absoluteHours) * 60;
+        const absoluteMinutes = Math.floor(minutes);
+        const m = absoluteMinutes > 9 ? absoluteMinutes : "0" + absoluteMinutes;
+
+        const seconds = (minutes - absoluteMinutes) * 60;
+        const absoluteSeconds = Math.floor(seconds);
+        const s = absoluteSeconds > 9 ? absoluteSeconds : "0" + absoluteSeconds;
+
+        this.timeLate = `01:00:00`;
+        this.clockinHistory = `ลืม clock-in ไป 01 ชั่วโมง : 00 นาที : 00 วินาที `;
+        this.massageTimeclockin = `คราวหน้าอย่าลืม Clock-in น้า`;
       }
     },
     notify() {
@@ -365,6 +398,10 @@ export default defineComponent({
     this.calHeigth = window.innerHeight;
     this.calWidth = window.innerWidth;
     this.getLocation();
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    this.statusClockin = `${urlParams.get("statusClockin")}`;
+    this.idLine = `${urlParams.get("id")}`;
 
     setTimeout(() => this.setIntervalClockin(), 1500);
   },
