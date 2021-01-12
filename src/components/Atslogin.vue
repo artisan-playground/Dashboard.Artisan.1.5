@@ -108,6 +108,7 @@ import { ref } from "vue";
 import axios from "axios";
 import { useRoute } from "vue-router";
 import { defineComponent } from "vue";
+import apiConfig from "../config/api";
 
 export default defineComponent({
   name: "Atslogin",
@@ -119,6 +120,7 @@ export default defineComponent({
     massageCode: 0 as number,
     resultSignin: {},
     date: "",
+    apiconfig: apiConfig.API_BASE_ENDPOINT,
   }),
 
   methods: {
@@ -130,7 +132,7 @@ export default defineComponent({
         this.notify();
       } else {
         return axios
-          .post(`http://192.168.1.20:8100/api/checkuser`, {
+          .post(`${this.apiconfig}/api/checkuser`, {
             username: `${this.email}@artisan.co.th`,
             UserlineId: params.get("id"),
           })

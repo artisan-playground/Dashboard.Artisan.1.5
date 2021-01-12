@@ -110,10 +110,12 @@ import Vue from "vue";
 import { defineComponent } from "vue";
 import axios from "axios";
 import mapboxgl from "mapbox-gl";
+import apiConfig from "../config/api";
 
 export default defineComponent({
   name: "Googlemap",
   data: () => ({
+    apiconfig: apiConfig.API_BASE_ENDPOINT,
     massageTimeclockin: "" as string,
     timeClockin: "" as string,
     calHeigth: 0 as number,

@@ -68,7 +68,8 @@ import store from "../store";
 import axios from "axios";
 import { useRoute } from "vue-router";
 import dayjs from "dayjs";
-export default {
+import apiConfig from "../config/api";
+export default defineComponent({
   data() {
     return {
       startValue: null,
@@ -76,6 +77,7 @@ export default {
       endOpen: false,
       option: "",
       leave: "",
+      apiconfig: apiConfig.API_BASE_ENDPOINT,
     };
   },
 
@@ -111,18 +113,20 @@ export default {
         .then(({ thumbnail }) => thumbnail);
     },
     request() {
+      const queryString = window.location.search;
+      const urlParams = new URLSearchParams(queryString);
       const payload = {
+        lineId: urlParams.get("id"),
+        Timeperiod: new Date(),
         Leavetype: this.option,
         Since: this.startValue,
         Until: this.endValue,
         Leaveevent: this.leave,
       };
-      console.log(payload);
+
       axios
-        .post(`http://172.16.3.33:8100/api/request`, payload)
+        .post(`${this.apiconfig}/api/request`, payload)
         .then(function(response) {
-          console.log(response.data.responseBody);
-          console.log(response.data.responseCode);
           if (response.data.responseCode === 200) {
             alert(response.data.message);
           } else {
@@ -133,19 +137,11 @@ export default {
           alert(error);
         });
     },
-    //   return {
-    //     option,
-    //     startValue,
-    //     endValue,
-    //     leave,
-    //     request,
-    //   };
-    // },
   },
   callback(key) {
     console.log(key);
   },
-};
+});
 </script>
 
 <style scoped>
