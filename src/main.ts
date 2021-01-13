@@ -5,6 +5,7 @@ import {
   Modal,
   Tabs,
   Upload,
+  Form,
 } from "ant-design-vue";
 import "ant-design-vue/dist/antd.css";
 import { createApp } from "vue";
@@ -18,5 +19,6 @@ app.use(Button);
 app.use(Tabs);
 app.use(Upload);
 app.use(Modal);
+app.use(Form);
 app.use(router);
 app.mount("#app");

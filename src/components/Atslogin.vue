@@ -29,7 +29,6 @@
             style="width:10%;float: left;"
           />ลงทะเบียนเรียบร้อยแล้วจ้า
         </div>
-
         <div style="text-align: end;margin-top: 2em;">
           <a-button type="primary" class="btu-modal" @click="signinSuccess">
             OK
@@ -47,7 +46,6 @@
             style="width:10%;float: left;"
           />ไม่พบ E-mail ที่กรอกมากรุณาติดต่อ HR
         </div>
-
         <div style="text-align: end;margin-top: 2em;">
           <a-button type="primary" class="btu-modal" @click="handleCancel">
             OK
@@ -79,7 +77,6 @@
             Artisan Dashboard
           </p>
         </div>
-
         <div class="flex-col" style="margin-top:3em">
           <input
             id="em"
@@ -102,14 +99,12 @@
     </div>
   </div>
 </template>
-
 <script lang="ts">
 import { ref } from "vue";
 import axios from "axios";
 import { useRoute } from "vue-router";
 import { defineComponent } from "vue";
 import apiConfig from "../config/api";
-
 export default defineComponent({
   name: "Atslogin",
   data: () => ({
@@ -122,12 +117,10 @@ export default defineComponent({
     date: "",
     apiconfig: apiConfig.API_BASE_ENDPOINT,
   }),
-
   methods: {
     signIn: function() {
       const quetyString = window.location.search;
       const params = new URLSearchParams(quetyString);
-
       if (!this.email) {
         this.notify();
       } else {
@@ -197,10 +190,10 @@ export default defineComponent({
   width: 100%;
   height: 37px;
   border-radius: 2px;
-  background-color: #134f83;
+  background-color: #134F83;
   color: rgb(255, 255, 255);
   box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.043);
-  border: 2px solid #d3ecfd;
+  border: 2px solid #D3ECFD;
   border-radius: 2px;
   page-break-after: 16px;
 }
@@ -228,13 +221,13 @@ export default defineComponent({
   background-size: 20px 20px;
   background-repeat: no-repeat;
   background-position: 7px 6px;
-  border: 1px solid #d9d9d9;
+
+  border: 1px solid #D9D9D9;
   box-sizing: border-box;
   border-radius: 2px;
   padding-left: 33px;
-  border: 1px solid #d9d9d9;
+  border: 1px solid #D9D9D9;
 }
-
 #ats {
   width: 30%;
   padding: 0 2%;
@@ -244,13 +237,14 @@ export default defineComponent({
   font-weight: normal;
   font-size: 14px;
   line-height: 30px;
-  color: #4f4f4f, 100%;
+  color: #4F4F4F, 100%;
   flex: none;
   order: 1;
   flex-grow: 0;
-  border: 1px solid #d9d9d9;
+  border: 1px solid #D9D9D9;
   box-sizing: border-box;
   border-radius: 2px;
-  background: #f5f5f5;
+  background: #F5F5F5;
 }
 </style>
+
