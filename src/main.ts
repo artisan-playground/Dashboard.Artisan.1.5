@@ -6,6 +6,7 @@ import {
   Modal,
   Tabs,
   Upload,
+  Form,
 } from "ant-design-vue";
 import "ant-design-vue/dist/antd.css";
 import { createApp } from "vue";
