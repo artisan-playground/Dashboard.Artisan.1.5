@@ -304,8 +304,22 @@ export default defineComponent({
         };
 
         this.content = Math.floor(Math.random() * 2);
+
         axios
           .post(`${this.apiconfig}/api/clockin`, result)
+          .then((response) => {
+            console.log("response: ", response);
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+
+        axios
+          .post(`${this.apiconfig}/api/sendmassage`, {
+            clockinHistory: this.clockinHistory,
+            statusClockin: this.statusClockin,
+            id: this.idLine,
+          })
           .then((response) => {
             console.log("response: ", response);
           })
@@ -329,7 +343,7 @@ export default defineComponent({
         this.timeLate = "00:00:00";
         this.clockinHistory = "ตรงเวลา";
       } else if (this.statusClockin === "2") {
-        this.massageTimeclockin = `คุณเข้างานสายนะ !!!!`;
+        this.massageTimeclockin = `คุณเข้างานสายแต่อยู่ในเวลานะ !!!!`;
         this.timeLate = "00:00:00";
         this.clockinHistory = "สายแต่อยู่ในเวลา";
       } else if (this.statusClockin === "3") {
@@ -350,8 +364,8 @@ export default defineComponent({
 
         this.timeLate = `${h}:${m}:${s}`;
 
-        this.clockinHistory = `สายไป ${h} ชั่วโมง : ${m} นาที : ${s} วินาที `;
-        this.massageTimeclockin = `คุณเข้างานสายไป ${h} ชั่วโมง : ${m} นาที : ${s} วินาที `;
+        this.clockinHistory = `แย่แล้วคุณ Clock-in สายไป ${h} ชั่วโมง : ${m} นาที : ${s} วินาที `;
+        this.massageTimeclockin = `แย่แล้วคุณเข้างานสายไป ${h} ชั่วโมง : ${m} นาที : ${s} วินาที `;
       } else if (this.statusClockin === "4") {
         const milliseconds =
           Date.parse(Currenttimecal) - Date.parse(Clockintime);
@@ -370,7 +384,7 @@ export default defineComponent({
 
         this.timeLate = `01:00:00`;
         this.clockinHistory = `ลืม clock-in ไป 01 ชั่วโมง : 00 นาที : 00 วินาที `;
-        this.massageTimeclockin = `คราวหน้าอย่าลืม Clock-in น้า`;
+        this.massageTimeclockin = `ไม่น่าเลยคราวหน้าอย่าลืม Clock-in น้า`;
       }
     },
     notify() {
