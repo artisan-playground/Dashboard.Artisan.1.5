@@ -1,97 +1,178 @@
 <template>
   <div class="Vleaveform">
-    <div class="box">
+    <div class="calendar">
       <div
         class="cld"
         :style="{
-          width: '300px',
           border: '1px solid #d9d9d9',
           borderRadius: '4px',
         }"
       >
-        <a-calendar :fullscreen="false" @panelChange="onPanelChange" />
+        <a-calendar
+          :fullscreen="false"
+          @select="onSelect"
+          @panelChange="onPanelChange"
+        />
       </div>
     </div>
-    <router-link to="Vonleave">
-      <div class="box">
-        <a-button class="button1" @click="Sick()">ลาป่วย</a-button>
+
+    <div
+      style="display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 20px;
+    justify-content: space-evenly;"
+    >
+      <div class="div-Sickleave">
+        <a-button class="btu-Sickleave">
+          <p
+            class="topicLeave"
+            :style="
+              `${calWidth > 650 ? `font-size: 18px` : `font-size: 15px`};`
+            "
+          >
+            ลาป่วย
+          </p>
+          <div
+            :style="
+              `${calWidth > 650 ? `font-size: 15px` : `font-size: 13px`};`
+            "
+          >
+            <span class="contentLeave" style="margin-right: 1em;"
+              >ใช้ไป {{ sickLeaveUse }} วัน</span
+            >
+            <span class="contentLeave">เหลือ {{ sickLeaveAllday }} วัน</span>
+          </div>
+        </a-button>
       </div>
-    </router-link>
-    <router-link to="Vonleave">
-      <div class="box">
-        <a-button class="button2" @click="Stop()">ลากิจ</a-button>
+      <div class="div-Onleave">
+        <a-button class="btu-Onleave">
+          <p
+            class="topicLeave"
+            :style="
+              `${calWidth > 650 ? `font-size: 18px` : `font-size: 15px`};`
+            "
+          >
+            ลากิจ
+          </p>
+          <div
+            :style="
+              `${calWidth > 650 ? `font-size: 15px` : `font-size: 13px`};`
+            "
+          >
+            <span class="contentLeave" style="margin-right: 1em;"
+              >ใช้ไป {{ onLeaveUse }} วัน</span
+            >
+            <span class="contentLeave">เหลือ {{ onLeaveAllday }} วัน</span>
+          </div>
+        </a-button>
       </div>
-    </router-link>
+    </div>
   </div>
 </template>
 
-<script>
-export default {
-  methods: {
-    onPanelChange(value, mode) {
-      console.log(value, mode);
-    },
-  },
+<script lang="ts">
+import { defineComponent } from "vue";
+import axios from "axios";
+import apiConfig from "../config/api";
+export default defineComponent({
   name: "Leaveform",
-};
+  data: () => ({
+    apiconfig: apiConfig.API_BASE_ENDPOINT,
+    calHeigth: 0 as number,
+    calWidth: 0 as number,
+    sickLeaveAllday: 5 as number,
+    onLeaveAllday: 3 as number,
+    sickLeaveUse: 0 as number,
+    onLeaveUse: 0 as number,
+  }),
+  created() {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const lineId = urlParams.get("id");
+    axios
+      .post(`${this.apiconfig}/api/getrequest`, { lineId: lineId })
+      .then((response) => {
+        console.log("response: ", response.data.result);
+        this.sickLeaveUse = response.data.result.sick.length;
+        this.sickLeaveAllday -= this.sickLeaveUse;
+        this.onLeaveUse = response.data.result.onleave.length;
+        this.onLeaveAllday -= this.onLeaveUse;
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  },
+
+  mounted() {
+    this.calHeigth = window.innerHeight;
+    this.calWidth = window.innerWidth;
+  },
+});
 </script>
 
 <style scoped>
-.Vleaveform {
-  position: relative;
-  width: 100%;
-  height: 812px;
-
-  background: #ffffff;
+@font-face {
+  font-family: Anuphan;
+  src: url("../fonts/Anuphan-Regular.woff") format("woff");
 }
-.box {
+.Vleaveform {
+  height: 100vh;
+  background: #ffffff;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  padding: 0px;
-
-  position: static;
-  left: 0px;
-  right: 0px;
-  top: 300px;
-  bottom: 0px;
-
-  flex: none;
-  order: 1;
-  align-self: stretch;
-  flex-grow: 0;
-  margin: 0px 8px;
 }
-.button1 {
-  position: absolute;
-  width: 343px;
-  height: 96px;
-  left: 16px;
-  top: 375px;
-  background-image: url("../assets/Group.png");
-  background: #ffffff;
+.btu-Sickleave {
+  text-align: end;
+  width: 100%;
+  height: 100%;
+  background: none;
   border: none;
-  box-shadow: 0px 9px 28px 8px rgba(0, 0, 0, 0.05),
-    0px 6px 16px rgba(0, 0, 0, 0.08), 0px 3px 6px -4px rgba(0, 0, 0, 0.12);
-  border-radius: 4px;
 }
-.button2 {
-  position: absolute;
-  width: 343px;
-  height: 96px;
-  left: 16px;
-  top: 510px;
-  background-image: url("../assets/Groupp.png");
-  background: #ffffff;
-
-  box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12),
-    0px 6px 16px rgba(0, 0, 0, 0.08), 0px 9px 21px 8px rgba(0, 0, 0, 0.05);
+.btu-Onleave {
+  text-align: end;
+  width: 100%;
+  height: 100%;
+  background: none;
   border: none;
 }
 .cld {
-  margin-left: 26px;
   background: #ffffff;
   box-shadow: 0px 1px 0px #f2f2f2, inset 0px 1px 0px #f2f2f2,
     inset -1px 0px 0px #f2f2f2, inset 1px 0px 0px #f2f2f2;
+}
+.calendar {
+  padding: 20px;
+  background: #e9f0ff;
+}
+.div-Sickleave {
+  border-radius: 5px;
+  height: 40%;
+  width: 100%;
+  background-image: url("../assets/bg-Sickleave.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+  box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12),
+    0px 6px 16px rgba(0, 0, 0, 0.08), 0px 9px 21px 8px rgba(0, 0, 0, 0.05);
+}
+.div-Onleave {
+  border-radius: 5px;
+  height: 40%;
+  width: 100%;
+  background-image: url("../assets/bg-Onleave.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+  box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12),
+    0px 6px 16px rgba(0, 0, 0, 0.08), 0px 9px 21px 8px rgba(0, 0, 0, 0.05);
+}
+p,
+span {
+  font-family: Anuphan;
+}
+.topicLeave {
+  font-weight: 600;
+  font-size: 18px;
 }
 </style>

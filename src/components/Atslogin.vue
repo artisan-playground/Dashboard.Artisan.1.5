@@ -205,8 +205,9 @@ export default defineComponent({
   font-size: 18px;
   margin-top: 1em;
   margin-bottom: 0px;
-  color: #134F83;
+  color: #134f83;
 }
+
 #em {
   width: 70%;
   top: calc(50% - 30px / 2);
@@ -220,6 +221,7 @@ export default defineComponent({
   background-size: 20px 20px;
   background-repeat: no-repeat;
   background-position: 7px 6px;
+
   border: 1px solid #D9D9D9;
   box-sizing: border-box;
   border-radius: 2px;
@@ -245,3 +247,4 @@ export default defineComponent({
   background: #F5F5F5;
 }
 </style>
+

@@ -1,12 +1,7 @@
 <template>
   <div>
     <div>
-      <a-modal
-        :visible="visible"
-        :confirm-loading="confirmLoading"
-        @cancel="handleCancel"
-        footer=""
-      >
+      <a-modal :visible="visible" @cancel="handleCancel" footer="">
         <div v-if="approveClockin === 'approved'" class="Vclockinsuccess">
           <div style="width:100%">
             <img
@@ -27,7 +22,16 @@
                   Success is a lousy teacher. I seduces smart people into
                   thinking they can't lose.
                 </p>
-                <p class="content2" style="color:'#8F8F8F'">Bill Gates</p>
+                <p
+                  class="content2"
+                  :style="
+                    `${
+                      calWidth > 760 ? `font-size: 18px` : `font-size: 15px`
+                    };color:'#8F8F8F'`
+                  "
+                >
+                  Bill Gates
+                </p>
               </div>
 
               <div v-else-if="content === 1">
@@ -48,6 +52,16 @@
                   "
                 >
                   Steve Jobs
+                </p>
+              </div>
+
+              <div>
+                <p
+                  :style="
+                    `${calWidth > 760 ? `font-size: 16px` : `font-size: 14px`};`
+                  "
+                >
+                  {{ massageTimeclockin }}
                 </p>
               </div>
             </div>
@@ -96,10 +110,15 @@ import Vue from "vue";
 import { defineComponent } from "vue";
 import axios from "axios";
 import mapboxgl from "mapbox-gl";
+import apiConfig from "../config/api";
 
 export default defineComponent({
   name: "Googlemap",
   data: () => ({
+    apiconfig: apiConfig.API_BASE_ENDPOINT,
+    statusClockin: "" as string,
+    massageTimeclockin: "" as string,
+    timeClockin: "" as string,
     calHeigth: 0 as number,
     calWidth: 0 as number,
     approveClockin: "" as string,
@@ -107,6 +126,10 @@ export default defineComponent({
     interval: undefined as any,
     counter: 0 as number,
     content: 0 as number,
+    idLine: "" as string,
+    clockinTime: "" as string,
+    timeLate: "" as string,
+    clockinHistory: "" as string,
     positionUser: {
       lat: 0 as number,
       lng: 0 as number,
@@ -119,8 +142,8 @@ export default defineComponent({
   methods: {
     getLocation() {
       navigator.geolocation.getCurrentPosition((position) => {
-        this.positionUser.lat = 18.78576185133086;
-        this.positionUser.lng = 98.96627524143693;
+        this.positionUser.lat = position.coords.latitude;
+        this.positionUser.lng = position.coords.longitude;
         this.initMap();
       });
     },
@@ -128,10 +151,6 @@ export default defineComponent({
       const metersToPixelsAtMaxZoom = (meters: number, latitude: number) =>
         meters / 0.075 / Math.cos((latitude * Math.PI) / 180);
 
-      // const positionUser = {
-      //   lngUser: 98.96627524143693,
-      //   latUser: 18.78576185133086,
-      // };
       const positionUser = {
         lngUser: this.positionUser.lng,
         latUser: this.positionUser.lat,
@@ -255,11 +274,11 @@ export default defineComponent({
       const lat2 = this.positionCompany.lat;
       const lon1 = this.positionUser.lng;
       const lon2 = this.positionCompany.lng;
-      const R = 6371e3; // metres
-      const rlat1 = (lat1 * Math.PI) / 180; // φ1
-      const rlat2 = (lat2 * Math.PI) / 180; //φ2
-      const rlat12 = ((lat2 - lat1) * Math.PI) / 180; //Δφ
-      const lonPie = ((lon2 - lon1) * Math.PI) / 180; //Δλ
+      const R = 6371e3;
+      const rlat1 = (lat1 * Math.PI) / 180;
+      const rlat2 = (lat2 * Math.PI) / 180;
+      const rlat12 = ((lat2 - lat1) * Math.PI) / 180;
+      const lonPie = ((lon2 - lon1) * Math.PI) / 180;
 
       const a =
         Math.sin(rlat12 / 2) * Math.sin(rlat12 / 2) +
@@ -269,23 +288,24 @@ export default defineComponent({
           Math.sin(lonPie / 2);
 
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      const dist = R * c; // in metres
-
-      const queryString = window.location.search;
-      const urlParams = new URLSearchParams(queryString);
+      const dist = R * c;
 
       if (dist < 100) {
         this.approveClockin = "approved";
+        this.calculatTime();
+
         const result = {
-          id: `${urlParams.get("id")}`,
+          id: this.idLine,
           distance: Math.ceil(dist),
-          responeCode: 204,
+          statusClockin: this.statusClockin,
+          clockinHistory: this.clockinHistory,
+          timeLate: this.timeLate,
+          clockinTime: this.clockinTime,
         };
 
         this.content = Math.floor(Math.random() * 2);
-
         axios
-          .post("http://192.168.1.6:8100/api/clockin", result)
+          .post(`${this.apiconfig}/api/clockin`, result)
           .then((response) => {
             console.log("response: ", response);
           })
@@ -296,6 +316,62 @@ export default defineComponent({
         this.approveClockin = "notapproved";
       }
       this.notify();
+    },
+    calculatTime() {
+      const Currenttime = `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
+
+      const Currenttimecal = `${new Date().toDateString()} ${new Date().toTimeString()}`;
+      const Clockintime = `${new Date().toDateString()} 9:15:00`;
+      this.clockinTime = Currenttime;
+
+      if (this.statusClockin === "1") {
+        this.massageTimeclockin = `ดีใจด้วยคุณไม่สายน้าา`;
+        this.timeLate = "00:00:00";
+        this.clockinHistory = "ตรงเวลา";
+      } else if (this.statusClockin === "2") {
+        this.massageTimeclockin = `คุณเข้างานสายนะ !!!!`;
+        this.timeLate = "00:00:00";
+        this.clockinHistory = "สายแต่อยู่ในเวลา";
+      } else if (this.statusClockin === "3") {
+        const milliseconds =
+          Date.parse(Currenttimecal) - Date.parse(Clockintime);
+
+        const hours = milliseconds / (1000 * 60 * 60);
+        const absoluteHours = Math.floor(hours);
+        const h = absoluteHours > 9 ? absoluteHours : "0" + absoluteHours;
+
+        const minutes = (hours - absoluteHours) * 60;
+        const absoluteMinutes = Math.floor(minutes);
+        const m = absoluteMinutes > 9 ? absoluteMinutes : "0" + absoluteMinutes;
+
+        const seconds = (minutes - absoluteMinutes) * 60;
+        const absoluteSeconds = Math.floor(seconds);
+        const s = absoluteSeconds > 9 ? absoluteSeconds : "0" + absoluteSeconds;
+
+        this.timeLate = `${h}:${m}:${s}`;
+
+        this.clockinHistory = `สายไป ${h} ชั่วโมง : ${m} นาที : ${s} วินาที `;
+        this.massageTimeclockin = `คุณเข้างานสายไป ${h} ชั่วโมง : ${m} นาที : ${s} วินาที `;
+      } else if (this.statusClockin === "4") {
+        const milliseconds =
+          Date.parse(Currenttimecal) - Date.parse(Clockintime);
+
+        const hours = milliseconds / (1000 * 60 * 60);
+        const absoluteHours = Math.floor(hours);
+        const h = absoluteHours > 9 ? absoluteHours : "0" + absoluteHours;
+
+        const minutes = (hours - absoluteHours) * 60;
+        const absoluteMinutes = Math.floor(minutes);
+        const m = absoluteMinutes > 9 ? absoluteMinutes : "0" + absoluteMinutes;
+
+        const seconds = (minutes - absoluteMinutes) * 60;
+        const absoluteSeconds = Math.floor(seconds);
+        const s = absoluteSeconds > 9 ? absoluteSeconds : "0" + absoluteSeconds;
+
+        this.timeLate = `01:00:00`;
+        this.clockinHistory = `ลืม clock-in ไป 01 ชั่วโมง : 00 นาที : 00 วินาที `;
+        this.massageTimeclockin = `คราวหน้าอย่าลืม Clock-in น้า`;
+      }
     },
     notify() {
       this.visible = true;
@@ -322,10 +398,13 @@ export default defineComponent({
   },
 
   mounted() {
-    console.log(process.env);
     this.calHeigth = window.innerHeight;
     this.calWidth = window.innerWidth;
     this.getLocation();
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    this.statusClockin = `${urlParams.get("statusClockin")}`;
+    this.idLine = `${urlParams.get("id")}`;
 
     setTimeout(() => this.setIntervalClockin(), 1500);
   },
@@ -339,7 +418,7 @@ export default defineComponent({
 }
 body,
 html {
-  font-family: "Anuphan", sans-serif;
+  font-family: Anuphan, sans-serif;
 }
 .Vclockinsuccess,
 .Vclockinfail {
@@ -348,7 +427,7 @@ html {
   padding: 5px;
   width: 100%;
   text-align: center;
-  font-family: "Anuphan", sans-serif;
+  font-family: Anuphan, sans-serif;
 }
 .alert-content {
   font-weight: bold;
