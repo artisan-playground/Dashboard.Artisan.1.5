@@ -2,6 +2,7 @@ import {
   Button,
   Calendar,
   DatePicker,
+  Input,
   Modal,
   Tabs,
   Upload,
@@ -18,5 +19,6 @@ app.use(Button);
 app.use(Tabs);
 app.use(Upload);
 app.use(Modal);
+app.use(Input);
 app.use(router);
 app.mount("#app");

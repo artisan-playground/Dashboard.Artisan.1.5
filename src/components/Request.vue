@@ -1,17 +1,18 @@
 <template>
   <div class="Vonleave">
     <div>
-      <a-tabs default-active-key="1" @change="callback">
+      <a-tabs default-active-key="2" @change="callback">
         <a-tab-pane key="1" tab="ลาป่วย"></a-tab-pane>
-        <a-tab-pane key="2" tab="ลากิจ" force-render></a-tab-pane>
+        <a-tab-pane key="2" tab="ลากิจ"></a-tab-pane>
       </a-tabs>
     </div>
     <div class="box">
       <p class="text"><font color="red">* </font>ช่วงเวลา</p>
       <select class="options" v-model="option">
         <option value="" disabled selected>เลือกช่วงเวลาการลา</option>
-        <option value="1">เต็มวัน</option>
-        <option value="2">ครึ่งวัน</option>
+        <option value="1">ครึ่งวัน(เช้า)</option>
+        <option value="2">ครึ่งวัน(บ่าย)</option>
+        <option value="3">เต็มวัน</option>
       </select>
     </div>
     <div class="box">
@@ -45,31 +46,68 @@
     </div>
     <div class="box">
       <p class="text">แนบเอกสาร</p>
-      <div>
-        <a-upload
-          list-type="picture"
-          action="//jsonplaceholder.typicode.com/posts/"
-          :preview-file="previewFile"
-        >
-          <a-button> <a-icon type="upload" /> Upload </a-button>
-        </a-upload>
+      <a-upload
+        v-model:fileList="fileList"
+        name="avatar"
+        list-type="picture-card"
+        class="avatar-uploader"
+        :show-upload-list="false"
+        action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+        :before-upload="beforeUpload"
+        @change="handleChange"
+      >
+        <img v-if="imageUrl" :src="imageUrl" alt="avatar" />
+        <div v-else>
+          <!-- todo -->
+          <loading-outlined v-if="loading" />
+          <plus-outlined v-else />
+          <div class="ant-upload-text">Upload</div>
+        </div>
+      </a-upload>
+
+      <div class="box">
+        <p class="daily">Admin ลาให้</p>
+        <a-input
+          class="box1"
+          name="leave"
+          v-model="leave"
+          placeholder="Member people"
+        />
+        <a-tooltip title="For admin only">
+          <info-circle-outlined style="color: rgba(0, 0, 0, 0.45)" />
+        </a-tooltip>
       </div>
-    </div>
-    <div class="box">
-      <a-button class="button" @click="request()">ส่ง</a-button>
+      <div class="box">
+        <a-button class="button" @click="request()">ส่ง</a-button>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { defineComponent } from "vue";
-import { computed, ref } from "vue";
+import { computed, ref, defineComponent } from "vue";
 import store from "../store";
 import axios from "axios";
 import { useRoute } from "vue-router";
 import dayjs from "dayjs";
-import apiConfig from "../config/api";
+import {
+  PlusOutlined,
+  LoadingOutlined,
+  InfoCircleOutlined,
+} from "@ant-design/icons-vue";
+import { message } from "ant-design-vue";
+
+function getBase64(img, callback) {
+  const reader = new FileReader();
+  reader.addEventListener("load", () => callback(reader.result));
+  reader.readAsDataURL(img);
+}
 export default defineComponent({
+  components: {
+    LoadingOutlined,
+    PlusOutlined,
+    InfoCircleOutlined,
+  },
   data() {
     return {
       startValue: null,
@@ -77,10 +115,11 @@ export default defineComponent({
       endOpen: false,
       option: "",
       leave: "",
-      apiconfig: apiConfig.API_BASE_ENDPOINT,
+      fileList: [],
+      loading: false,
+      imageUrl: "",
     };
   },
-
   methods: {
     onChangeStartDate(date, dateString) {
       this.startValue = dayjs(date).format("YYYY-MM-DD HH:mm:ss");
@@ -102,42 +141,57 @@ export default defineComponent({
       }
       return startValue.valueOf() >= endValue.valueOf();
     },
-    previewFile(file) {
-      console.log("Your upload file:", file);
-      // Your process logic. Here we just mock to the same file
-      return fetch("https://next.json-generator.com/api/json/get/4ytyBoLK8", {
-        method: "POST",
-        body: file,
-      })
-        .then((res) => res.json())
-        .then(({ thumbnail }) => thumbnail);
-    },
-    request() {
-      const queryString = window.location.search;
-      const urlParams = new URLSearchParams(queryString);
-      const payload = {
-        lineId: urlParams.get("id"),
-        Timeperiod: new Date(),
-        Leavetype: this.option,
-        Since: this.startValue,
-        Until: this.endValue,
-        Leaveevent: this.leave,
-      };
-
-      axios
-        .post(`${this.apiconfig}/api/request`, payload)
-        .then(function(response) {
-          if (response.data.responseCode === 200) {
-            alert(response.data.message);
-          } else {
-            alert("Success");
-          }
-        })
-        .catch(function(error) {
-          alert(error);
+    handleChange(info) {
+      if (info.file.status === "uploading") {
+        this.loading = true;
+        return;
+      }
+      if (info.file.status === "done") {
+        getBase64(info.file.originFileObj, (imageUrl) => {
+          this.imageUrl = imageUrl;
+          this.loading = false;
         });
+      }
+      if (info.file.status === "error") {
+        this.loading = false;
+      }
+    },
+    beforeUpload(file) {
+      const isJpgOrPng = file.type === "image/jpg" || file.type === "image/png";
+      if (!isJpgOrPng) {
+        message.error("You can only upload JPG file!");
+      }
+      const isLt2M = file.size / 1024 / 1024 < 2;
+      if (!isLt2M) {
+        message.error("Image must smaller than 2MB!");
+      }
+      return isJpgOrPng && isLt2M;
     },
   },
+  request() {
+    const payload = {
+      Leavetype: this.option,
+      Since: this.startValue,
+      Until: this.endValue,
+      Leaveevent: this.leave,
+    };
+    console.log(payload);
+    axios
+      .post(`http://172.16.3.33:8100/api/request`, payload)
+      .then(function(response) {
+        console.log(response.data.responseBody);
+        console.log(response.data.responseCode);
+        if (response.data.responseCode === 200) {
+          alert(response.data.message);
+        } else {
+          alert("Success");
+        }
+      })
+      .catch(function(error) {
+        alert(error);
+      });
+  },
+
   callback(key) {
     console.log(key);
   },
@@ -208,5 +262,18 @@ p.text {
   margin-left: -3px;
   margin-right: 16px;
   margin-top: 24px;
+}
+.avatar-uploader > .ant-upload {
+  width: 128px;
+  height: 128px;
+}
+.ant-upload-select-picture-card i {
+  font-size: 32px;
+  color: #999;
+}
+
+.ant-upload-select-picture-card .ant-upload-text {
+  margin-top: 8px;
+  color: #666;
 }
 </style>
