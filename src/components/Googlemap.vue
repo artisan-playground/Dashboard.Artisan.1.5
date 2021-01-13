@@ -142,8 +142,8 @@ export default defineComponent({
   methods: {
     getLocation() {
       navigator.geolocation.getCurrentPosition((position) => {
-        this.positionUser.lat = 18.78593940199299;
-        this.positionUser.lng = 98.96717131662662;
+        this.positionUser.lat = position.coords.latitude;
+        this.positionUser.lng = position.coords.longitude;
         this.initMap();
       });
     },
