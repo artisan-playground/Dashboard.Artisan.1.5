@@ -142,8 +142,8 @@ export default defineComponent({
   methods: {
     getLocation() {
       navigator.geolocation.getCurrentPosition((position) => {
-        this.positionUser.lat = position.coords.latitude;
-        this.positionUser.lng = position.coords.longitude;
+        this.positionUser.lat = 18.78593940199299;
+        this.positionUser.lng = 98.96717131662662;
         this.initMap();
       });
     },
@@ -303,8 +303,6 @@ export default defineComponent({
           clockinTime: this.clockinTime,
         };
 
-        console.log(result);
-
         this.content = Math.floor(Math.random() * 2);
         axios
           .post(`${this.apiconfig}/api/clockin`, result)
@@ -321,7 +319,9 @@ export default defineComponent({
     },
     calculatTime() {
       const Currenttime = `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
-      const Clockintime = `${new Date().toLocaleDateString()} 9:15:00`;
+
+      const Currenttimecal = `${new Date().toDateString()} ${new Date().toTimeString()}`;
+      const Clockintime = `${new Date().toDateString()} 9:15:00`;
       this.clockinTime = Currenttime;
 
       if (this.statusClockin === "1") {
@@ -333,7 +333,8 @@ export default defineComponent({
         this.timeLate = "00:00:00";
         this.clockinHistory = "สายแต่อยู่ในเวลา";
       } else if (this.statusClockin === "3") {
-        const milliseconds = Date.parse(Currenttime) - Date.parse(Clockintime);
+        const milliseconds =
+          Date.parse(Currenttimecal) - Date.parse(Clockintime);
 
         const hours = milliseconds / (1000 * 60 * 60);
         const absoluteHours = Math.floor(hours);
@@ -348,10 +349,12 @@ export default defineComponent({
         const s = absoluteSeconds > 9 ? absoluteSeconds : "0" + absoluteSeconds;
 
         this.timeLate = `${h}:${m}:${s}`;
+
         this.clockinHistory = `สายไป ${h} ชั่วโมง : ${m} นาที : ${s} วินาที `;
         this.massageTimeclockin = `คุณเข้างานสายไป ${h} ชั่วโมง : ${m} นาที : ${s} วินาที `;
       } else if (this.statusClockin === "4") {
-        const milliseconds = Date.parse(Currenttime) - Date.parse(Clockintime);
+        const milliseconds =
+          Date.parse(Currenttimecal) - Date.parse(Clockintime);
 
         const hours = milliseconds / (1000 * 60 * 60);
         const absoluteHours = Math.floor(hours);

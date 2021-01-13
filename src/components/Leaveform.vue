@@ -39,9 +39,9 @@
             "
           >
             <span class="contentLeave" style="margin-right: 1em;"
-              >ใช้ไป ... วัน</span
+              >ใช้ไป {{ sickLeaveUse }} วัน</span
             >
-            <span class="contentLeave">เหลือ ... วัน</span>
+            <span class="contentLeave">เหลือ {{ sickLeaveAllday }} วัน</span>
           </div>
         </a-button>
       </div>
@@ -61,9 +61,9 @@
             "
           >
             <span class="contentLeave" style="margin-right: 1em;"
-              >ใช้ไป ... วัน</span
+              >ใช้ไป {{ onLeaveUse }} วัน</span
             >
-            <span class="contentLeave">เหลือ ... วัน</span>
+            <span class="contentLeave">เหลือ {{ onLeaveAllday }} วัน</span>
           </div>
         </a-button>
       </div>
@@ -73,12 +73,36 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import axios from "axios";
+import apiConfig from "../config/api";
 export default defineComponent({
   name: "Leaveform",
   data: () => ({
+    apiconfig: apiConfig.API_BASE_ENDPOINT,
     calHeigth: 0 as number,
     calWidth: 0 as number,
+    sickLeaveAllday: 5 as number,
+    onLeaveAllday: 3 as number,
+    sickLeaveUse: 0 as number,
+    onLeaveUse: 0 as number,
   }),
+  created() {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const lineId = urlParams.get("id");
+    axios
+      .post(`${this.apiconfig}/api/getrequest`, { lineId: lineId })
+      .then((response) => {
+        console.log("response: ", response.data.result);
+        this.sickLeaveUse = response.data.result.sick.length;
+        this.sickLeaveAllday -= this.sickLeaveUse;
+        this.onLeaveUse = response.data.result.onleave.length;
+        this.onLeaveAllday -= this.onLeaveUse;
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  },
 
   mounted() {
     this.calHeigth = window.innerHeight;
