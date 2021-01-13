@@ -58,7 +58,6 @@ export default defineComponent({
     }
     return {
       email,
-
       Signin,
       user,
     };
