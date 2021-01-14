@@ -343,7 +343,7 @@ export default defineComponent({
         this.timeLate = "00:00:00";
         this.clockinHistory = "ตรงเวลา";
       } else if (this.statusClockin === "2") {
-        this.massageTimeclockin = `คุณเข้างานสายแต่อยู่ในเวลานะ !!!!`;
+        this.massageTimeclockin = `คุณเข้างานสายแต่ก็ไม่เกินเวลานะ !!!!`;
         this.timeLate = "00:00:00";
         this.clockinHistory = "สายแต่อยู่ในเวลา";
       } else if (this.statusClockin === "3") {
@@ -364,7 +364,7 @@ export default defineComponent({
 
         this.timeLate = `${h}:${m}:${s}`;
 
-        this.clockinHistory = `แย่แล้วคุณ Clock-in สายไป ${h} ชั่วโมง : ${m} นาที : ${s} วินาที `;
+        this.clockinHistory = `สายไป ${h} ชั่วโมง : ${m} นาที : ${s} วินาที `;
         this.massageTimeclockin = `แย่แล้วคุณเข้างานสายไป ${h} ชั่วโมง : ${m} นาที : ${s} วินาที `;
       } else if (this.statusClockin === "4") {
         const milliseconds =
