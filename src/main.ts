@@ -4,9 +4,9 @@ import {
   DatePicker,
   Input,
   Modal,
+  Select,
   Tabs,
   Upload,
-  Form,
 } from "ant-design-vue";
 import "ant-design-vue/dist/antd.css";
 import { createApp } from "vue";
@@ -17,6 +17,7 @@ const app = createApp(App);
 app.use(DatePicker);
 app.use(Calendar);
 app.use(Button);
+app.use(Select);
 app.use(Tabs);
 app.use(Upload);
 app.use(Modal);

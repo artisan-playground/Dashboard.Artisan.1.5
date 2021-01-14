@@ -1,42 +1,41 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import Vatslogin from "../views/Vatslogin.vue";
+import Clockin from "../views/Clockin.vue";
 import Vatsclockout from "../views/Vatsclockout.vue";
-import Vrequest from "../views/Vrequest.vue";
+import Vatslogin from "../views/Vatslogin.vue";
 import Vleaveform from "../views/Vleaveform.vue";
-import Clockin from "../views/Clockin.vue"
+import Vrequest from "../views/Vrequest.vue";
 
 const routes: Array<RouteRecordRaw> = [
-
   {
     path: "/Clockin",
     name: "Clockin",
-    component: Clockin
+    component: Clockin,
   },
   {
     path: "/Vatslogin",
     name: "Vatslogin",
-    component: Vatslogin
+    component: Vatslogin,
   },
   {
     path: "/Vatsclockout",
     name: "Vatsclockout",
-    component: Vatsclockout
+    component: Vatsclockout,
   },
   {
     path: "/Vrequest",
     name: "Vrequest",
-    component: Vrequest
+    component: Vrequest,
   },
   {
     path: "/Vleaveform",
     name: "Vleaveform",
-    component: Vleaveform
-  }
+    component: Vleaveform,
+  },
 ];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes
+  routes,
 });
 
 export default router;
