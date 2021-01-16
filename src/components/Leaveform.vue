@@ -30,8 +30,8 @@
       >
         <router-link
           :to="{
-            name: 'Vrequest',
-            params: { statusLeave: 'sick', idLine: lineId },
+            path: '/Vrequest',
+            query: { id: `${lineId}`, type: 'Sickleave' },
           }"
         >
           <a-button class="btu-Sickleave">
@@ -63,8 +63,8 @@
       >
         <router-link
           :to="{
-            name: 'Vrequest',
-            params: { statusLeave: 'Onleave', idLine: lineId },
+            path: '/Vrequest',
+            query: { id: `${lineId}`, type: 'Onleave' },
           }"
         >
           <a-button class="btu-Onleave">

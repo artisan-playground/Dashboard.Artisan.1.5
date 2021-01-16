@@ -1,137 +1,53 @@
 <template>
-  <div class="Vonleave">
-    <div>
-      <a-tabs default-active-key="Onleave" @change="callback" animated="false">
-        <a-tab-pane key="Onleave" tab="ลากิจ">
-          <div class="From-leave">
-            <p class="title-leave">จำนวนวันลากิจที่เหลือ ... วัน</p>
-
-            <div>
-              <p><span>*</span> ประเภทการลา</p>
-              <a-input value="ลากิจ" readonly />
-            </div>
-
-            <div>
-              <p class="text"><span>* </span>ช่วงเวลา</p>
-
-              <a-select placeholder="เลือกช่วงเวลาการลา" style="width: 100%">
-                <a-select-option value="1">
-                  ครึ่งวัน (เช้า)
-                </a-select-option>
-                <a-select-option value="2">
-                  ครึ่งวัน(บ่าย)
-                </a-select-option>
-                <a-select-option value="3">
-                  เต็มวัน
-                </a-select-option>
-              </a-select>
-              <div>
-                <div style="width:50%;float: left;">
-                  <p class="text"><span>* </span>เริ่ม</p>
-                  <a-date-picker
-                    v-model="startValue"
-                    :disabled-date="disabledStartDate"
-                    show-time
-                    format="YYYY-MM-DD HH:mm:ss"
-                    placeholder="Start"
-                    @change="onChangeStartDate"
-                  />
-                </div>
-
-                <div style="width:50%;float: right;">
-                  <p class="text"><span>* </span>ถึง</p>
-                  <a-date-picker
-                    v-model="endValue"
-                    :disabled-date="disabledEndDate"
-                    show-time
-                    format="YYYY-MM-DD HH:mm:ss"
-                    placeholder="End"
-                    @change="onChangeEndDate"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <p class="title-leave"><span>* </span>เหตุผลการลา</p>
-                <a-textarea
-                  class="box1"
-                  name="leave"
-                  v-model="leave"
-                  placeholder="เขียนข้อความ"
-                ></a-textarea>
-              </div>
-
-              <div>
-                <p class="title-leave">แนบเอกสารการลา</p>
-                <a-upload
-                  v-model:fileList="fileList"
-                  name="avatar"
-                  list-type="picture-card"
-                  class="avatar-uploader"
-                  :show-upload-list="false"
-                  action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                  :before-upload="beforeUpload"
-                  @change="handleChange"
-                >
-                  <img v-if="imageUrl" :src="imageUrl" alt="avatar" />
-                  <div v-else>
-                    <!-- todo -->
-                    <loading-outlined v-if="loading" />
-                    <plus-outlined v-else />
-                    <div class="ant-upload-text">Upload</div>
-                  </div>
-                </a-upload>
-              </div>
-            </div>
+  <div class="Vonleave" :style="`height:${calHeigth}px !important`">
+    <a-tabs default-active-key="Onleave">
+      <a-tab-pane key="Onleave" tab="ลากิจ">
+        <div class="From-leave">
+          <p class="title-leave">จำนวนวันลากิจที่เหลือ ... วัน</p>
+          <div>
+            <p><span>*</span> ประเภทการลา</p>
+            <a-input value="ลากิจ" readonly />
           </div>
-        </a-tab-pane>
 
-        <a-tab-pane key="sick" tab="ลาป่วย">
-          <div class="From-leave">
-            <p class="title-leave">จำนวนวันลาป่วยที่เหลือ ... วัน</p>
+          <div>
+            <p class="text"><span>* </span>ช่วงเวลา</p>
+            <a-select placeholder="เลือกช่วงเวลาการลา" style="width: 100%">
+              <a-select-option value="1">
+                ครึ่งวัน (เช้า)
+              </a-select-option>
+              <a-select-option value="2">
+                ครึ่งวัน(บ่าย)
+              </a-select-option>
+              <a-select-option value="3">
+                เต็มวัน
+              </a-select-option>
+            </a-select>
             <div>
-              <p><span>*</span> ประเภทการลา</p>
-              <a-input value="ลาป่วย" readonly />
-            </div>
-
-            <div>
-              <p class="text"><span>* </span>ช่วงเวลา</p>
-              <a-select placeholder="เลือกช่วงเวลาการลา" style="width: 100%">
-                <a-select-option value="1">
-                  ครึ่งวัน (เช้า)
-                </a-select-option>
-                <a-select-option value="2">
-                  ครึ่งวัน(บ่าย)
-                </a-select-option>
-                <a-select-option value="3">
-                  เต็มวัน
-                </a-select-option>
-              </a-select>
-              <div>
-                <div style="width:50%;float: left;">
-                  <p class="text"><span>* </span>เริ่ม</p>
-                  <a-date-picker
-                    v-model="startValue"
-                    :disabled-date="disabledStartDate"
-                    show-time
-                    format="YYYY-MM-DD HH:mm:ss"
-                    placeholder="Start"
-                    @change="onChangeStartDate"
-                  />
-                </div>
-
-                <div style="width:50%;float: right;">
-                  <p class="text"><span>* </span>ถึง</p>
-                  <a-date-picker
-                    v-model="endValue"
-                    :disabled-date="disabledEndDate"
-                    show-time
-                    format="YYYY-MM-DD HH:mm:ss"
-                    placeholder="End"
-                    @change="onChangeEndDate"
-                  />
-                </div>
+              <div style="width:50%;float: left;">
+                <p class="text"><span>* </span>เริ่ม</p>
+                <a-date-picker
+                  v-model="startValue"
+                  :disabled-date="disabledStartDate"
+                  show-time
+                  format="YYYY-MM-DD HH:mm:ss"
+                  placeholder="Start"
+                  @change="onChangeStartDate"
+                />
               </div>
+              <div style="width:50%;float: right;">
+                <p class="text"><span>* </span>ถึง</p>
+                <a-date-picker
+                  v-model="endValue"
+                  :disabled-date="disabledEndDate"
+                  show-time
+                  format="YYYY-MM-DD HH:mm:ss"
+                  placeholder="End"
+                  @change="onChangeEndDate"
+                  style="width:60px;"
+                />
+              </div>
+            </div>
+            <div>
               <p class="title-leave"><span>* </span>เหตุผลการลา</p>
               <a-textarea
                 class="box1"
@@ -140,7 +56,6 @@
                 placeholder="เขียนข้อความ"
               ></a-textarea>
             </div>
-
             <div>
               <p class="title-leave">แนบเอกสารการลา</p>
               <a-upload
@@ -149,12 +64,13 @@
                 list-type="picture-card"
                 class="avatar-uploader"
                 :show-upload-list="false"
-                :before-upload="beforeUpload"
                 action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                :before-upload="beforeUpload"
                 @change="handleChange"
               >
                 <img v-if="imageUrl" :src="imageUrl" alt="avatar" />
                 <div v-else>
+                  <!-- todo -->
                   <loading-outlined v-if="loading" />
                   <plus-outlined v-else />
                   <div class="ant-upload-text">Upload</div>
@@ -162,10 +78,84 @@
               </a-upload>
             </div>
           </div>
-        </a-tab-pane>
-      </a-tabs>
-    </div>
+        </div>
+      </a-tab-pane>
 
+      <a-tab-pane key="sick" tab="ลาป่วย">
+        <div class="From-leave">
+          <p class="title-leave">จำนวนวันลาป่วยที่เหลือ ... วัน</p>
+          <div>
+            <p><span>*</span> ประเภทการลา</p>
+            <a-input value="ลาป่วย" readonly />
+          </div>
+          <div>
+            <p class="text"><span>* </span>ช่วงเวลา</p>
+            <a-select placeholder="เลือกช่วงเวลาการลา" style="width: 100%">
+              <a-select-option value="1">
+                ครึ่งวัน (เช้า)
+              </a-select-option>
+              <a-select-option value="2">
+                ครึ่งวัน(บ่าย)
+              </a-select-option>
+              <a-select-option value="3">
+                เต็มวัน
+              </a-select-option>
+            </a-select>
+            <div>
+              <div style="width:40%;float: left;">
+                <p class="text"><span>* </span>เริ่ม</p>
+                <a-date-picker
+                  v-model="startValue"
+                  :disabled-date="disabledStartDate"
+                  show-time
+                  format="YYYY-MM-DD HH:mm:ss"
+                  placeholder="Start"
+                  @change="onChangeStartDate"
+                />
+              </div>
+              <div style="width:50%;">
+                <p class="text"><span>* </span>ถึง</p>
+                <a-date-picker
+                  v-model="endValue"
+                  :disabled-date="disabledEndDate"
+                  show-time
+                  format="YYYY-MM-DD HH:mm:ss"
+                  placeholder="End"
+                  @change="onChangeEndDate"
+                />
+              </div>
+            </div>
+            <p class="title-leave"><span>* </span>เหตุผลการลา</p>
+            <a-textarea
+              class="box1"
+              name="leave"
+              v-model="leave"
+              placeholder="เขียนข้อความ"
+            ></a-textarea>
+          </div>
+          <div>
+            <p class="title-leave">แนบเอกสารการลา</p>
+            <a-upload
+              v-model:fileList="fileList"
+              name="avatar"
+              list-type="picture-card"
+              class="avatar-uploader"
+              :show-upload-list="false"
+              :before-upload="beforeUpload"
+              action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+              @change="handleChange"
+            >
+              <img v-if="imageUrl" :src="imageUrl" alt="avatar" />
+              <div v-else>
+                <loading-outlined v-if="loading" />
+                <plus-outlined v-else />
+                <div class="ant-upload-text">Upload</div>
+              </div>
+            </a-upload>
+          </div>
+        </div>
+      </a-tab-pane>
+    </a-tabs>
     <div class="div-button-senddata">
       <a-button class="button-senddata" @click="request">ส่ง</a-button>
     </div>
@@ -173,8 +163,7 @@
 </template>
 
 <script lang="ts">
-import { computed, ref, defineComponent } from "vue";
-import store from "../store";
+import { defineComponent } from "vue";
 import axios from "axios";
 import { useRoute } from "vue-router";
 import dayjs from "dayjs";
@@ -200,6 +189,9 @@ export default defineComponent({
     leave: "" as string,
     loading: false as boolean,
     imageUrl: "" as string,
+    calHeigth: 0 as number,
+    status: "" as string,
+    calWidth: 0 as number,
   }),
   methods: {
     onChangeStartDate(date: string, dateString: string) {
@@ -223,6 +215,7 @@ export default defineComponent({
       return startValue.valueOf() >= endValue.valueOf();
     },
     handleChange(info: any) {
+      console.log(info);
       if (info.file.status === "uploading") {
         this.loading = true;
         return;
@@ -269,16 +262,14 @@ export default defineComponent({
           alert(error);
         });
     },
-
-    callback(key: any) {
-      console.log(key);
-    },
   },
   mounted() {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     this.type = `${urlParams.get("type")}`;
-    console.log(this.type);
+
+    this.calHeigth = window.innerHeight;
+    this.calWidth = window.innerWidth;
   },
 });
 </script>
@@ -289,10 +280,8 @@ export default defineComponent({
 }
 .Vonleave {
   font-family: Anuphan;
-  height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 }
 p {
   margin-bottom: 0em;
