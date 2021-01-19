@@ -117,6 +117,7 @@
 import { defineComponent } from "vue";
 import axios from "axios";
 import apiConfig from "../config/api";
+
 export default defineComponent({
   name: "Leaveform",
   data: () => ({
@@ -131,14 +132,27 @@ export default defineComponent({
     onLeaveUse: 0 as number,
   }),
   created() {
+    // axios
+    //   .post(`${this.apiconfig}/api/getrequest`, { lineId: this.lineId })
+    //   .then((response) => {
+    //     console.log("response: ", response.data.result);
+    //     this.sickLeaveUse = response.data.result.sick.length;
+    //     this.sickLeaveAllday -= this.sickLeaveUse;
+    //     this.onLeaveUse = response.data.result.onleave.length;
+    //     this.onLeaveAllday -= this.onLeaveUse;
+    //   })
+    //   .catch((err) => {
+    //     console.error(err);
+    //   });
     axios
-      .post(`${this.apiconfig}/api/getrequest`, { lineId: this.lineId })
+      .post(`${this.apiconfig}/api/getEvents`)
       .then((response) => {
-        console.log("response: ", response.data.result);
-        this.sickLeaveUse = response.data.result.sick.length;
-        this.sickLeaveAllday -= this.sickLeaveUse;
-        this.onLeaveUse = response.data.result.onleave.length;
-        this.onLeaveAllday -= this.onLeaveUse;
+        const result = response.data.responseBody;
+        result.map((event: any) => {
+          const start = event.start.dateTime || event.start.date;
+          const end = event.end.dateTime || event.end.date;
+          console.log(`${start} - ${end} Titel : ${event.summary}`);
+        });
       })
       .catch((err) => {
         console.error(err);
