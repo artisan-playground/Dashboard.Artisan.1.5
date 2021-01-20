@@ -11,8 +11,8 @@
   </div>
 </template>
 <script lang="ts">
-import SickLeaveForm from "../components/SickLeave.vue";
-import OnLeaveForm from "../components/OnLeave.vue";
+import SickLeaveForm from "../components/Sickleave.vue";
+import OnLeaveForm from "../components/Onleave.vue";
 import { defineComponent } from "vue";
 
 export default defineComponent({

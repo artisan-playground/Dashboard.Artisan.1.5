@@ -1,29 +1,58 @@
 <template>
-  <form></form>
   <div class="From-leave">
-    <p class="title-leave">จำนวนวันลาป่วยที่เหลือ ... วัน</p>
     <div>
-      <p><span>*</span> ประเภทการลา</p>
-      <a-input :value="typeleave" readonly />
+      <p class="title-leave" style="top:0px">จำนวนวันลากิจที่เหลือ ... วัน</p>
     </div>
     <div>
-      <p class="text"><span>* </span>ช่วงเวลา</p>
+      <p class="topic-leave"><span>*</span> ประเภทการลา</p>
+      <a-input
+        :value="typeleave"
+        readonly
+        style="border: 3px solid #d9d9d9 !important;border-radius: 2px;"
+      />
+    </div>
+
+    <div>
+      <p class="topic-leave"><span>* </span>ช่วงเวลา</p>
       <a-select
         placeholder="เลือกช่วงเวลาการลา"
         style="width: 100%;"
         v-model="typeTimeperiod"
         @change="changetypeTimeperiod"
       >
-        <a-select-option value="1" style="font-family: Anuphan;">
+        <a-select-option value="ครึ่งวัน(เช้า)" style="font-family: Anuphan;">
           ครึ่งวัน (เช้า)
         </a-select-option>
-        <a-select-option value="2" style="font-family: Anuphan;">
-          ครึ่งวัน(บ่าย)
+        <a-select-option value="ครึ่งวัน(บ่าย)" style="font-family: Anuphan;">
+          ครึ่งวัน (บ่าย)
         </a-select-option>
-        <a-select-option value="3" style="font-family: Anuphan;">
+        <a-select-option value="เต็มวัน" style="font-family: Anuphan;">
           เต็มวัน
         </a-select-option>
       </a-select>
+    </div>
+
+    <div>
+      <div v-if="typeTimeperiod === 'เต็มวัน' && leaveEnddate != ''">
+        <p class="title-leave" v-if="dateLeave < remaindays">
+          จำนวนวัน {{ dateLeave }} วัน
+        </p>
+        <p
+          class="title-leave"
+          style="color:red;"
+          v-else-if="dateLeave > remaindays"
+        >
+          จำนวนวันลาของคุณเกินจำนวนแล้ว
+        </p>
+      </div>
+      <div>
+        <div style="width: 50%;float: left;">
+          <p class="topic-leave"><span>*</span> เริ่ม</p>
+        </div>
+        <div style="width: 50%;float: right;">
+          <p class="topic-leave" style="margin-left: 4%;"><span>*</span> ถึง</p>
+        </div>
+      </div>
       <div>
         <a-date-picker
           v-model="LeaveStartdate"
@@ -32,6 +61,7 @@
           @change="changeLeaveStartDate"
         />
         <a-date-picker
+          style="margin-left:4%;"
           v-model="LeaveEnddate"
           format="YYYY-MM-DD"
           placeholder="End"
@@ -39,14 +69,16 @@
           :disabled="leaveStartdate === ''"
         />
       </div>
+    </div>
+    <div>
       <p class="title-leave"><span>* </span>เหตุผลการลา</p>
-      <a-textarea
-        class="box1"
-        name="leave"
+      <textarea
         v-model="detailLeave"
         placeholder="เขียนข้อความ"
-      ></a-textarea>
+        style="width:100%"
+      />
     </div>
+
     <div>
       <p class="title-leave">แนบเอกสารการลา</p>
       <a-upload
@@ -98,11 +130,13 @@ export default defineComponent({
     leaveEnddate: "" as string,
     openEndDate: true,
     loading: false as boolean,
+    dateLeave: 0 as number,
+    remaindays: 5 as number,
     imageUrl: "" as string,
   }),
   methods: {
-    changetypeTimeperiod(e: any) {
-      this.typeTimeperiod;
+    changetypeTimeperiod(e: string) {
+      this.typeTimeperiod = e;
     },
 
     changeLeaveStartDate(date: string, dateString: string) {
@@ -115,8 +149,17 @@ export default defineComponent({
       this.leaveEnddate = dateString;
       const startDateLeave = Date.parse(this.leaveStartdate);
       const endDateLeave = Date.parse(this.leaveEnddate);
-      if (endDateLeave < startDateLeave) {
-        message.error("วันสุดท้ายของการลา ต้องไม่น้อยกว่าวันเริ่ม");
+      if (this.typeTimeperiod === "เต็มวัน") {
+        if (endDateLeave < startDateLeave) {
+          message.error("วันสุดท้ายของการลา ต้องไม่น้อยกว่าวันเริ่ม");
+        } else {
+          this.dateLeave = (endDateLeave - startDateLeave) / 86400000;
+        }
+      } else {
+        if (endDateLeave != startDateLeave) {
+          message.error("กรณีที่ลาครึ่งวัน วันในการลาต้องตรงกัน");
+          this.dateLeave = 0.5;
+        }
       }
     },
     handleChange(info: any) {
@@ -146,19 +189,52 @@ export default defineComponent({
       }
       return isJpgOrPng && isLt2M;
     },
+    submitLeave() {
+      console.log("sdfsdfsdf");
+    },
   },
 });
 </script>
 
 <style scoped>
-.From-leave,
-.div-button-senddata {
-  padding: 15px;
+.From-leave {
+  padding: 0 15px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
 }
-
+.topic-leave {
+  color: black;
+  font-weight: 600;
+}
+span {
+  color: red;
+}
 .button-senddata {
   width: 100%;
   background-color: #134f83;
   color: white;
+}
+
+.ant-calendar-picker {
+  width: 48% !important;
+  border: 3px solid #d9d9d9;
+  border-radius: 2px;
+}
+.title-leave {
+  color: #105efb;
+  font-weight: 600;
+}
+textarea {
+  border: 3px solid #d9d9d9;
+  border-radius: 2px;
+  transition: all 0.3s;
+}
+textarea:focus {
+  border: 1px solid #105efb;
+}
+.ant-select-selector {
+  border: 3px solid #d9d9d9 !important;
 }
 </style>
