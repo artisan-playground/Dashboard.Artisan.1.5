@@ -1,17 +1,12 @@
 <template>
   <div class="Vleaveform">
     <div class="calendar">
-      <div
-        class="cld"
-        :style="{
-          border: '1px solid #d9d9d9',
-          borderRadius: '4px',
-        }"
-      >
-        <a-calendar
-          :fullscreen="false"
-          @select="onSelect"
-          @panelChange="onPanelChange"
+      <div class="cld">
+        <v-calendar
+          is-expanded
+          :columns="$screens({ lg: 2 }, 1)"
+          :min-date="new Date()"
+          :attributes="attributes"
         />
       </div>
     </div>
@@ -130,35 +125,83 @@ export default defineComponent({
     onLeaveAllday: 3 as number,
     sickLeaveUse: 0 as number,
     onLeaveUse: 0 as number,
+    holiday: [] as Date[],
+    leave: [] as Date[],
+    event: [] as Date[],
+    descriptionEvent: "" as string,
   }),
+  computed: {
+    attributes(): any {
+      return [
+        {
+          highlight: {
+            color: "blue",
+            fillMode: "light",
+          },
+          dates: new Date(),
+        },
+        {
+          dot: {
+            color: "red",
+            fillMode: "light",
+          },
+          dates: this.holiday,
+          popover: {
+            label: "Holiday",
+            visibility: "focus",
+          },
+        },
+        {
+          dates: this.event,
+          dot: {
+            color: "blue",
+            class: "opacity-75",
+          },
+          popover: {
+            label: this.descriptionEvent,
+            visibility: "focus",
+          },
+        },
+        {
+          dates: this.leave,
+          dot: {
+            color: "yellow",
+          },
+          popover: {
+            label: "Leave",
+            visibility: "focus",
+          },
+        },
+      ];
+    },
+  },
   created() {
-    // axios
-    //   .post(`${this.apiconfig}/api/getrequest`, { lineId: this.lineId })
-    //   .then((response) => {
-    //     console.log("response: ", response.data.result);
-    //     this.sickLeaveUse = response.data.result.sick.length;
-    //     this.sickLeaveAllday -= this.sickLeaveUse;
-    //     this.onLeaveUse = response.data.result.onleave.length;
-    //     this.onLeaveAllday -= this.onLeaveUse;
-    //   })
-    //   .catch((err) => {
-    //     console.error(err);
-    //   });
     axios
       .post(`${this.apiconfig}/api/getEvents`)
       .then((response) => {
         const result = response.data.responseBody;
-        result.map((event: any) => {
-          const start = event.start.dateTime || event.start.date;
-          const end = event.end.dateTime || event.end.date;
-          console.log(`${start} - ${end} Titel : ${event.summary}`);
+        const allEvent: Date[] = [];
+        const allHoliday: Date[] = [];
+        const allLeave: Date[] = [];
+        result.map((event: any, i: number, dateTime: Date) => {
+          dateTime = new Date(event.start.dateTime);
+          if (event.colorId === "5") {
+            allLeave.push(dateTime);
+          } else if (event.colorId === "11") {
+            allHoliday.push(dateTime);
+          } else {
+            allEvent.push(dateTime);
+          }
+          this.descriptionEvent = `${event.summary}`;
         });
+        this.holiday = allHoliday;
+        this.leave = allLeave;
+        this.event = allEvent;
       })
       .catch((err) => {
         console.error(err);
       });
   },
-
   mounted() {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
@@ -209,6 +252,7 @@ export default defineComponent({
   background: #ffffff;
   box-shadow: 0px 1px 0px #f2f2f2, inset 0px 1px 0px #f2f2f2,
     inset -1px 0px 0px #f2f2f2, inset 1px 0px 0px #f2f2f2;
+  border-radius: 10px;
 }
 .calendar {
   padding: 15px;
