@@ -7,6 +7,7 @@
           :columns="$screens({ lg: 2 }, 1)"
           :min-date="new Date()"
           :attributes="attributes"
+          style="font-family: Anuphan;"
         />
       </div>
     </div>
