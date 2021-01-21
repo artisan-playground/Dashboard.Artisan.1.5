@@ -100,9 +100,7 @@
   </div>
 </template>
 <script lang="ts">
-import { ref } from "vue";
 import axios from "axios";
-import { useRoute } from "vue-router";
 import { defineComponent } from "vue";
 import apiConfig from "../config/api";
 export default defineComponent({
@@ -190,10 +188,10 @@ export default defineComponent({
   width: 100%;
   height: 37px;
   border-radius: 2px;
-  background-color: #134F83;
+  background-color: #134f83;
   color: rgb(255, 255, 255);
   box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.043);
-  border: 2px solid #D3ECFD;
+  border: 2px solid #d3ecfd;
   border-radius: 2px;
   page-break-after: 16px;
 }
@@ -222,11 +220,11 @@ export default defineComponent({
   background-repeat: no-repeat;
   background-position: 7px 6px;
 
-  border: 1px solid #D9D9D9;
+  border: 1px solid #d9d9d9;
   box-sizing: border-box;
   border-radius: 2px;
   padding-left: 33px;
-  border: 1px solid #D9D9D9;
+  border: 1px solid #d9d9d9;
 }
 #ats {
   width: 30%;
@@ -237,14 +235,13 @@ export default defineComponent({
   font-weight: normal;
   font-size: 14px;
   line-height: 30px;
-  color: #4F4F4F, 100%;
+  color: #4f4f4f, 100%;
   flex: none;
   order: 1;
   flex-grow: 0;
-  border: 1px solid #D9D9D9;
+  border: 1px solid #d9d9d9;
   box-sizing: border-box;
   border-radius: 2px;
-  background: #F5F5F5;
+  background: #f5f5f5;
 }
 </style>
-

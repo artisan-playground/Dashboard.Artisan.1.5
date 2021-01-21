@@ -1,15 +1,40 @@
 <template>
-  <div class="Vrequest">
-    <Request msg="Check in success" />
+  <div class="Vrequest" style="font-family: Anuphan;">
+    <a-tabs :default-active-key="typeLeave">
+      <a-tab-pane key="Onleave" tab="ลากิจ">
+        <OnLeaveForm />
+      </a-tab-pane>
+      <a-tab-pane key="Sickleave" tab="ลาป่วย" force-render>
+        <SickLeaveForm />
+      </a-tab-pane>
+    </a-tabs>
   </div>
 </template>
 <script lang="ts">
-import Request from "../components/Request.vue";
+import SickLeaveForm from "../components/Sickleave.vue";
+import OnLeaveForm from "../components/Onleave.vue";
+import { defineComponent } from "vue";
 
-export default {
+export default defineComponent({
   name: "Vrequest",
-  components: {
-    Request,
+  components: { SickLeaveForm, OnLeaveForm },
+  data: () => ({
+    typeLeave: "" as string,
+  }),
+  mounted() {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    this.typeLeave = `${urlParams.get("type")}`;
   },
-};
+});
 </script>
+<style scoped>
+@font-face {
+  font-family: Anuphan;
+  src: url("../fonts/Anuphan-Regular.woff") format("woff");
+}
+.Vonleave {
+  display: flex;
+  flex-direction: column;
+}
+</style>
