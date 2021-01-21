@@ -1,7 +1,9 @@
 <template>
   <div class="From-leave">
     <div>
-      <p class="title-leave" style="top:0px">จำนวนวันลากิจที่เหลือ ... วัน</p>
+      <p class="title-leave" style="top:0px">
+        จำนวนวันลากิจที่เหลือ {{ remaindays }} วัน
+      </p>
     </div>
     <div>
       <p class="topic-leave"><span>*</span> ประเภทการลา</p>
@@ -110,6 +112,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import { PlusOutlined, LoadingOutlined } from "@ant-design/icons-vue";
 import { message } from "ant-design-vue";
+import apiConfig from "../config/api";
 
 function getBase64(img: any, callback: any) {
   const reader = new FileReader();
@@ -117,12 +120,14 @@ function getBase64(img: any, callback: any) {
   reader.readAsDataURL(img);
 }
 export default defineComponent({
-  name: "OnLeaveForm",
+  name: "Onleaveform",
   components: {
     LoadingOutlined,
     PlusOutlined,
   },
   data: () => ({
+    apiconfig: apiConfig.API_BASE_ENDPOINT,
+    lineId: "" as string,
     detailLeave: "" as string,
     typeTimeperiod: "" as string,
     typeleave: "ลากิจ" as string,
@@ -131,8 +136,10 @@ export default defineComponent({
     openEndDate: true,
     loading: false as boolean,
     dateLeave: 0 as number,
-    remaindays: 5 as number,
+    remaindays: 0 as number,
     imageUrl: "" as string,
+    Since: "" as string,
+    Until: "" as string,
   }),
   methods: {
     changetypeTimeperiod(e: string) {
@@ -190,8 +197,61 @@ export default defineComponent({
       return isJpgOrPng && isLt2M;
     },
     submitLeave() {
-      console.log("sdfsdfsdf");
+      axios
+        .post(`${this.apiconfig}/api/request`, {
+          lineId: this.lineId,
+          Leavetype: this.typeleave,
+          Timeperiod: this.typeTimeperiod,
+          Since: this.leaveStartdate,
+          Until: this.leaveEnddate,
+          CountLeave: this.dateLeave,
+          Leaveevent: this.detailLeave,
+        })
+        .then((response) => {
+          console.log("response: ", response);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+
+      if (this.typeTimeperiod === "ครึ่งวัน(เช้า)") {
+        this.Since = `${this.leaveStartdate}T09:00:00`;
+        this.Until = `${this.leaveEnddate}T13:00:00`;
+      } else if (this.typeTimeperiod === "ครึ่งวัน(บ่าย)") {
+        this.Since = `${this.leaveStartdate}T13:00:00`;
+        this.Until = `${this.leaveEnddate}T18:00:00`;
+      } else {
+        this.Since = `${this.leaveStartdate}T9:00:00`;
+        this.Until = `${this.leaveEnddate}T18:00:00`;
+      }
+
+      axios
+        .post(`${this.apiconfig}/api/createEvents`, {
+          Sammary: this.typeleave,
+          description: this.detailLeave,
+          Since: this.Since,
+          Until: this.Until,
+        })
+        .then((response) => {
+          console.log("response: ", response);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
     },
+  },
+  mounted() {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    this.lineId = `${urlParams.get("id")}`;
+    axios
+      .post(`${this.apiconfig}/api/getrequest`, { UserlineId: this.lineId })
+      .then((response) => {
+        this.remaindays = response.data.responseBody.Onleave;
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   },
 });
 </script>

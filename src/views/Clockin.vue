@@ -1,17 +1,17 @@
 <template>
-    <div>
-        <Googlemap/>
-    </div>
+  <div>
+    <Googlemap />
+  </div>
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-import Googlemap from '../components/Googlemap.vue'
+import Vue from "vue";
+import Googlemap from "../components/Googlemap.vue";
 
 export default {
-    name: "Clockin",
-    components: {
-        Googlemap
-    }
-}
+  name: "Clockin",
+  components: {
+    Googlemap,
+  },
+};
 </script>

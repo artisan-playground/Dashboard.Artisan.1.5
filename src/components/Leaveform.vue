@@ -47,7 +47,7 @@
               <span class="contentLeave" style="margin-right: 1em;"
                 >ใช้ไป {{ sickLeaveUse }} วัน</span
               >
-              <span class="contentLeave">เหลือ {{ sickLeaveAllday }} วัน</span>
+              <span class="contentLeave">เหลือ {{ remainSickLeave }} วัน</span>
             </div>
           </a-button>
         </router-link>
@@ -80,7 +80,7 @@
               <span class="contentLeave" style="margin-right: 1em;"
                 >ใช้ไป {{ onLeaveUse }} วัน</span
               >
-              <span class="contentLeave">เหลือ {{ onLeaveAllday }} วัน</span>
+              <span class="contentLeave">เหลือ {{ remainOnLeave }} วัน</span>
             </div>
           </a-button>
         </router-link>
@@ -126,6 +126,9 @@ export default defineComponent({
     onLeaveAllday: 3 as number,
     sickLeaveUse: 0 as number,
     onLeaveUse: 0 as number,
+    remainSickLeave: 0 as number,
+    remainOnLeave: 0 as number,
+    descriptionLeave: "" as string,
     holiday: [] as Date[],
     leave: [] as Date[],
     event: [] as Date[],
@@ -177,6 +180,24 @@ export default defineComponent({
     },
   },
   created() {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    this.lineId = `${urlParams.get("id")}`;
+    this.status = `${urlParams.get("status")}`;
+
+    axios
+      .post(`${this.apiconfig}/api/getrequest`, { UserlineId: this.lineId })
+      .then((response) => {
+        this.onLeaveUse =
+          this.onLeaveAllday - response.data.responseBody.Onleave;
+        this.remainOnLeave = response.data.responseBody.Onleave;
+        this.sickLeaveUse =
+          this.sickLeaveAllday - response.data.responseBody.Sickleave;
+        this.remainSickLeave = response.data.responseBody.Sickleave;
+      })
+      .catch((err) => {
+        console.error(err);
+      });
     axios
       .post(`${this.apiconfig}/api/getEvents`)
       .then((response) => {
@@ -204,10 +225,6 @@ export default defineComponent({
       });
   },
   mounted() {
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    this.lineId = `${urlParams.get("id")}`;
-    this.status = `${urlParams.get("status")}`;
     this.calHeigth = window.innerHeight;
     this.calWidth = window.innerWidth;
   },
