@@ -131,6 +131,7 @@ export default defineComponent({
     descriptionLeave: "" as string,
     holiday: [] as Date[],
     leave: [] as Date[],
+    leaves: [] as any[],
     event: [] as Date[],
     descriptionEvent: "" as string,
   }),
@@ -176,6 +177,21 @@ export default defineComponent({
             visibility: "focus",
           },
         },
+        {
+          highlight: {
+            start: { color: "yellow", fillMode: "outline" },
+            base: {
+              color: "yellow",
+              fillMode: "light",
+            },
+            end: { color: "yellow", fillMode: "outline" },
+          },
+          dates: this.leaves,
+          popover: {
+            label: "Leave",
+            visibility: "focus",
+          },
+        },
       ];
     },
   },
@@ -205,17 +221,29 @@ export default defineComponent({
         const allEvent: Date[] = [];
         const allHoliday: Date[] = [];
         const allLeave: Date[] = [];
-        result.map((event: any, i: number, dateTime: Date) => {
-          dateTime = new Date(event.start.dateTime);
-          if (event.colorId === "5") {
-            allLeave.push(dateTime);
-          } else if (event.colorId === "11") {
-            allHoliday.push(dateTime);
-          } else {
-            allEvent.push(dateTime);
+        const allLeaves: object[] = [];
+        result.map(
+          (event: any, i: number, dateTimeStart: Date, dateTimeEnd: Date) => {
+            dateTimeStart = new Date(event.start.dateTime);
+            dateTimeEnd = new Date(event.end.dateTime);
+            if (event.colorId === "5") {
+              const timeStart = Date.parse(`${dateTimeStart}`);
+              const timeEnd = Date.parse(`${dateTimeEnd}`);
+              const resultTime = timeEnd - timeStart;
+              if (resultTime > 86400000) {
+                allLeaves.push({ start: dateTimeStart, end: dateTimeEnd });
+              } else {
+                allLeave.push(dateTimeStart);
+              }
+            } else if (event.colorId === "11") {
+              allHoliday.push(dateTimeStart);
+            } else {
+              allEvent.push(dateTimeStart);
+            }
+            this.descriptionEvent = `${event.summary}`;
           }
-          this.descriptionEvent = `${event.summary}`;
-        });
+        );
+        this.leaves = allLeaves;
         this.holiday = allHoliday;
         this.leave = allLeave;
         this.event = allEvent;
