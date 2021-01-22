@@ -2,22 +2,22 @@
   <div class="Vrequest" style="font-family: Anuphan;">
     <a-tabs :default-active-key="typeLeave">
       <a-tab-pane key="Onleave" tab="ลากิจ">
-        <OnLeaveForm />
+        <Onleaveform />
       </a-tab-pane>
       <a-tab-pane key="Sickleave" tab="ลาป่วย" force-render>
-        <SickLeaveForm />
+        <Sickleaveform />
       </a-tab-pane>
     </a-tabs>
   </div>
 </template>
 <script lang="ts">
-import SickLeaveForm from "../components/Sickleave.vue";
-import OnLeaveForm from "../components/Onleave.vue";
+import Onleaveform from "../components/OnLeave.vue";
+import Sickleaveform from "../components/SickLeave.vue";
 import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "Vrequest",
-  components: { SickLeaveForm, OnLeaveForm },
+  components: { Sickleaveform, Onleaveform },
   data: () => ({
     typeLeave: "" as string,
   }),
