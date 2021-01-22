@@ -87,7 +87,7 @@ export default defineComponent({
       };
 
       axios
-        .post(`http://192.168.1.23:8100/api/clockout`, result)
+        .post(`${this.apiconfig}/api/clockout`, result)
         .then(function(response) {
           console.log(response.data.responseCode);
           if (response.data.responseCode === 200) {
