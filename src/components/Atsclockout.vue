@@ -1,21 +1,23 @@
 <template>
-  <div class="Vatsclockout" id="v-model-textarea">
+  <div class="Vatsclockout" id="v-model-textarea" :style="`height:${calHeigth}px !important`">
     <h1>Daily Clock out</h1>
+    
+    <p class="head">เวลานอนชอบละเมอ แต่เวลาเจอเธอชอบละลาย</p>
    <div class="atsco">
       <p class="daily">
-        <font color="red">* </font>วันนี้ทำอะไรบ้าง
+        <span color="red">* </span>วันนี้ทำอะไรบ้าง
       </p>
       <textarea class="box" name="today" v-model="today" placeholder="วันนี้ทำอะไรบ้าง"></textarea>
     </div>
     <div class="atsco">
       <p class="daily">
-        <font color="red">* </font>พรุ่งนี้ทำอะไรต่อ
+        <span color="red">* </span>พรุ่งนี้ทำอะไรต่อ
       </p>
       <textarea class="box" name="tomorrow" v-model="tomorrow" placeholder="พรุ่งนี้ทำอะไรต่อ"></textarea>
     </div>
     <div class="atsco">
       <p class="daily">
-        <font color="red">* </font>ติดปัญหาอะไร
+        <span color="red">* </span>ติดปัญหาอะไร
       </p>
       <textarea class="box" name="problem" v-model="problem" placeholder="ติดปัญหาอะไร"></textarea>
     </div>
@@ -111,6 +113,16 @@
     background-repeat: no-repeat;
     background-position: bottom;
   }
+  .head{
+/* Title/Regular */
+font-family: Anuphan;
+font-style: normal;
+font-weight: normal;
+font-size: 14px;
+line-height: 10vh;
+text-align: center;
+color: #333333;
+  }
 
   .atsco {
     flex-direction: column;
@@ -121,7 +133,7 @@
   textarea.box {
     height: 15vh;
     width: 95%;
-    border-radius: 5px;
+    border-radius: 2px;
   }
 
   textarea::placeholder {
@@ -133,7 +145,6 @@
   input.box {
     height: 32px;
     width: 95%;
-    top: 30px;
   }
 
   input::placeholder {
@@ -178,4 +189,8 @@
     box-shadow: 0 5px  rgb(165, 165, 165);
     transform: translateY(2px);
   }
+
+  span {
+  color: red;
+}
 </style>
