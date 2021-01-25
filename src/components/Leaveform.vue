@@ -204,12 +204,19 @@ export default defineComponent({
     axios
       .post(`${this.apiconfig}/api/getrequest`, { UserlineId: this.lineId })
       .then((response) => {
-        this.onLeaveUse =
-          this.onLeaveAllday - response.data.responseBody.Onleave;
-        this.remainOnLeave = response.data.responseBody.Onleave;
-        this.sickLeaveUse =
-          this.sickLeaveAllday - response.data.responseBody.Sickleave;
-        this.remainSickLeave = response.data.responseBody.Sickleave;
+        if (response.data.responseCode === 200) {
+          this.onLeaveUse =
+            this.onLeaveAllday - response.data.responseBody.Onleave;
+          this.remainOnLeave = response.data.responseBody.Onleave;
+          this.sickLeaveUse =
+            this.sickLeaveAllday - response.data.responseBody.Sickleave;
+          this.remainSickLeave = response.data.responseBody.Sickleave;
+        } else {
+          this.onLeaveUse = 0;
+          this.remainOnLeave = 3;
+          this.sickLeaveUse = 0;
+          this.remainSickLeave = 5;
+        }
       })
       .catch((err) => {
         console.error(err);
@@ -298,7 +305,6 @@ export default defineComponent({
   background: #ffffff;
   box-shadow: 0px 1px 0px #f2f2f2, inset 0px 1px 0px #f2f2f2,
     inset -1px 0px 0px #f2f2f2, inset 1px 0px 0px #f2f2f2;
-  border-radius: 10px;
 }
 .calendar {
   padding: 15px;
@@ -322,5 +328,11 @@ span {
 .topicLeave {
   font-weight: 600;
   font-size: 18px;
+}
+.vc-container,
+.vc-container * {
+  box-sizing: border-box;
+  border: none;
+  border-radius: 0px;
 }
 </style>

@@ -7,11 +7,7 @@
     </div>
     <div>
       <p class="topic-leave"><span>*</span> ประเภทการลา</p>
-      <a-input
-        :value="typeleave"
-        readonly
-        style="border: 3px solid #d9d9d9 !important;border-radius: 2px;"
-      />
+      <a-input :value="typeleave" readonly style="border-radius: 2px;" />
     </div>
 
     <div>
@@ -246,7 +242,11 @@ export default defineComponent({
     axios
       .post(`${this.apiconfig}/api/getrequest`, { UserlineId: this.lineId })
       .then((response) => {
-        this.remaindays = response.data.responseBody.Sickleave;
+        if (response.data.responseCode === 200) {
+          this.remaindays = response.data.responseBody.Sickleave;
+        } else {
+          this.remaindays = 5;
+        }
       })
       .catch((err) => {
         console.error(err);
@@ -261,6 +261,11 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
+}
+textarea {
+  border: 1px solid #d9d9d9;
+  border-radius: 2px;
+  transition: all 0.3s;
 }
 .topic-leave {
   color: black;
@@ -277,7 +282,7 @@ span {
 
 .ant-calendar-picker {
   width: 48% !important;
-  border: 3px solid #d9d9d9;
+
   border-radius: 2px;
 }
 .title-leave {
@@ -285,14 +290,10 @@ span {
   font-weight: 600;
 }
 textarea {
-  border: 3px solid #d9d9d9;
   border-radius: 2px;
   transition: all 0.3s;
 }
 textarea:focus {
   border: 1px solid #105efb;
-}
-.ant-select-selector {
-  border: 3px solid #d9d9d9 !important;
 }
 </style>
