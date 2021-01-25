@@ -2,6 +2,7 @@ import {
   Button,
   Calendar,
   DatePicker,
+  Icon,
   Input,
   Modal,
   Select,
@@ -18,6 +19,7 @@ app.use(DatePicker);
 app.use(Calendar);
 app.use(Button);
 app.use(Select);
+app.use(Icon);
 app.use(Tabs);
 app.use(VCalendar);
 app.use(Upload);

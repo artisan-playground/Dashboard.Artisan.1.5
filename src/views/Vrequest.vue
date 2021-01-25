@@ -1,10 +1,22 @@
 <template>
   <div class="Vrequest" style="font-family: Anuphan;">
-    <a-tabs :default-active-key="typeLeave">
+    <a-tabs default-active-key="Onleave" v-if="typeLeave === 'Onleave'">
       <a-tab-pane key="Onleave" tab="ลากิจ">
         <Onleaveform />
       </a-tab-pane>
-      <a-tab-pane key="Sickleave" tab="ลาป่วย" force-render>
+      <a-tab-pane key="Sickleave" tab="ลาป่วย">
+        <Sickleaveform />
+      </a-tab-pane>
+    </a-tabs>
+
+    <a-tabs
+      default-active-key="Sickleave"
+      v-else-if="typeLeave === 'Sickleave'"
+    >
+      <a-tab-pane key="Onleave" tab="ลากิจ">
+        <Onleaveform />
+      </a-tab-pane>
+      <a-tab-pane key="Sickleave" tab="ลาป่วย">
         <Sickleaveform />
       </a-tab-pane>
     </a-tabs>

@@ -150,7 +150,6 @@ export default defineComponent({
       this.visible = true;
     },
     handleOk(e: object) {
-      console.log(e);
       this.visible = false;
     },
   },

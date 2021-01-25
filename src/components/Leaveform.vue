@@ -27,7 +27,7 @@
         <router-link
           :to="{
             path: '/Vrequest',
-            query: { id: `${lineId}`, type: 'Sickleave' },
+            query: { id: `${lineId}`, type: 'Sickleave', status: `${status}` },
           }"
         >
           <a-button class="btu-Sickleave">
@@ -60,7 +60,7 @@
         <router-link
           :to="{
             path: '/Vrequest',
-            query: { id: `${lineId}`, type: 'Onleave' },
+            query: { id: `${lineId}`, type: 'Onleave', status: `${status}` },
           }"
         >
           <a-button class="btu-Onleave">
@@ -87,7 +87,7 @@
       </div>
 
       <div v-if="status === '1'" class="div-leave" id="div-Adminleave">
-        <a-button class="btu-Onleave">
+        <a-button class="btu-Onleave" @click="notify">
           <p
             class="topicLeave"
             :style="
@@ -105,6 +105,18 @@
           </div>
         </a-button>
       </div>
+
+      <div>
+        <a-modal :visible="visible" @cancel="handleCancel" footer="">
+          <div>
+            <a-input-search
+              placeholder="input search text"
+              style="width:100%;margin-top: 15px;"
+              @search="onSearch"
+            />
+          </div>
+        </a-modal>
+      </div>
     </div>
   </div>
 </template>
@@ -120,6 +132,7 @@ export default defineComponent({
     apiconfig: apiConfig.API_BASE_ENDPOINT,
     lineId: "" as string,
     calHeigth: 0 as number,
+    visible: false as boolean,
     status: "" as string,
     calWidth: 0 as number,
     sickLeaveAllday: 5 as number,
@@ -135,6 +148,14 @@ export default defineComponent({
     event: [] as Date[],
     descriptionEvent: "" as string,
   }),
+  methods: {
+    notify() {
+      this.visible = true;
+    },
+    handleCancel(e: object) {
+      this.visible = false;
+    },
+  },
   computed: {
     attributes(): any {
       return [
@@ -195,6 +216,7 @@ export default defineComponent({
       ];
     },
   },
+
   created() {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
@@ -204,12 +226,19 @@ export default defineComponent({
     axios
       .post(`${this.apiconfig}/api/getrequest`, { UserlineId: this.lineId })
       .then((response) => {
-        this.onLeaveUse =
-          this.onLeaveAllday - response.data.responseBody.Onleave;
-        this.remainOnLeave = response.data.responseBody.Onleave;
-        this.sickLeaveUse =
-          this.sickLeaveAllday - response.data.responseBody.Sickleave;
-        this.remainSickLeave = response.data.responseBody.Sickleave;
+        if (response.data.responseCode === 200) {
+          this.onLeaveUse =
+            this.onLeaveAllday - response.data.responseBody.Onleave;
+          this.remainOnLeave = response.data.responseBody.Onleave;
+          this.sickLeaveUse =
+            this.sickLeaveAllday - response.data.responseBody.Sickleave;
+          this.remainSickLeave = response.data.responseBody.Sickleave;
+        } else {
+          this.onLeaveUse = 0;
+          this.remainOnLeave = 3;
+          this.sickLeaveUse = 0;
+          this.remainSickLeave = 5;
+        }
       })
       .catch((err) => {
         console.error(err);
@@ -298,7 +327,6 @@ export default defineComponent({
   background: #ffffff;
   box-shadow: 0px 1px 0px #f2f2f2, inset 0px 1px 0px #f2f2f2,
     inset -1px 0px 0px #f2f2f2, inset 1px 0px 0px #f2f2f2;
-  border-radius: 10px;
 }
 .calendar {
   padding: 15px;
@@ -322,5 +350,11 @@ span {
 .topicLeave {
   font-weight: 600;
   font-size: 18px;
+}
+.vc-container,
+.vc-container * {
+  box-sizing: border-box;
+  border: none;
+  border-radius: 0px;
 }
 </style>
