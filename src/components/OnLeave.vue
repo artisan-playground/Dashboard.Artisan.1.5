@@ -6,12 +6,12 @@
       </p>
     </div>
     <div>
-      <p class="topic-leave"><span>*</span> ประเภทการลา</p>
+      <p class="topic-leave"><span class="Highlight">*</span> ประเภทการลา</p>
       <a-input :value="typeleave" readonly style="border-radius: 2px;" />
     </div>
 
     <div>
-      <p class="topic-leave"><span>* </span>ช่วงเวลา</p>
+      <p class="topic-leave"><span class="Highlight">* </span>ช่วงเวลา</p>
       <a-select
         placeholder="เลือกช่วงเวลาการลา"
         style="width: 100%;"
@@ -31,7 +31,13 @@
     </div>
 
     <div>
-      <div v-if="typeTimeperiod === 'เต็มวัน' && leaveEnddate != ''">
+      <div
+        v-if="
+          typeTimeperiod === 'เต็มวัน' &&
+            leaveEnddate != '' &&
+            leaveStartdate != ''
+        "
+      >
         <p class="title-leave" v-if="dateLeave < remaindays">
           จำนวนวัน {{ dateLeave }} วัน
         </p>
@@ -45,10 +51,12 @@
       </div>
       <div>
         <div style="width: 50%;float: left;">
-          <p class="topic-leave"><span>*</span> เริ่ม</p>
+          <p class="topic-leave"><span class="Highlight">*</span> เริ่ม</p>
         </div>
         <div style="width: 50%;float: right;">
-          <p class="topic-leave" style="margin-left: 4%;"><span>*</span> ถึง</p>
+          <p class="topic-leave" style="margin-left: 4%;">
+            <span class="Highlight">*</span> ถึง
+          </p>
         </div>
       </div>
       <div>
@@ -69,7 +77,7 @@
       </div>
     </div>
     <div>
-      <p class="title-leave"><span>* </span>เหตุผลการลา</p>
+      <p class="title-leave"><span class="Highlight">* </span>เหตุผลการลา</p>
       <textarea
         v-model="detailLeave"
         placeholder="เขียนข้อความ"
@@ -97,6 +105,12 @@
         </div>
       </a-upload>
     </div>
+
+    <div v-if="status === '1'">
+      <p class="title-leave"><span class="Highlight">* </span> Admin ลาให้</p>
+      <a-input placeholder="Member people"> </a-input>
+    </div>
+
     <div class="div-button-senddata">
       <a-button class="button-senddata" @click="submitLeave">ส่ง</a-button>
     </div>
@@ -125,6 +139,7 @@ export default defineComponent({
     apiconfig: apiConfig.API_BASE_ENDPOINT,
     lineId: "" as string,
     detailLeave: "" as string,
+    status: "" as string,
     typeTimeperiod: "" as string,
     typeleave: "ลากิจ" as string,
     leaveStartdate: "" as string,
@@ -144,8 +159,22 @@ export default defineComponent({
 
     changeLeaveStartDate(date: string, dateString: string) {
       this.leaveStartdate = dateString;
+      const startDateLeave = Date.parse(this.leaveStartdate);
+      const endDateLeave = Date.parse(this.leaveEnddate);
       if (this.leaveStartdate) {
         this.openEndDate = false;
+        if (this.typeTimeperiod === "เต็มวัน") {
+          if (endDateLeave < startDateLeave) {
+            message.error("วันสุดท้ายของการลา ต้องไม่น้อยกว่าวันเริ่ม");
+          } else {
+            const dateLeave = (endDateLeave - startDateLeave) / 86400000;
+            if (dateLeave === 0) {
+              this.dateLeave = 1;
+            } else {
+              this.dateLeave = (endDateLeave - startDateLeave) / 86400000 + 1;
+            }
+          }
+        }
       }
     },
     changeLeaveEndDate(date: string, dateString: string) {
@@ -156,7 +185,12 @@ export default defineComponent({
         if (endDateLeave < startDateLeave) {
           message.error("วันสุดท้ายของการลา ต้องไม่น้อยกว่าวันเริ่ม");
         } else {
-          this.dateLeave = (endDateLeave - startDateLeave) / 86400000;
+          const dateLeave = (endDateLeave - startDateLeave) / 86400000;
+          if (dateLeave === 0) {
+            this.dateLeave = 1;
+          } else {
+            this.dateLeave = (endDateLeave - startDateLeave) / 86400000 + 1;
+          }
         }
       } else {
         if (endDateLeave != startDateLeave) {
@@ -240,6 +274,7 @@ export default defineComponent({
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     this.lineId = `${urlParams.get("id")}`;
+    this.status = `${urlParams.get("status")}`;
     axios
       .post(`${this.apiconfig}/api/getrequest`, { UserlineId: this.lineId })
       .then((response) => {
@@ -268,9 +303,6 @@ export default defineComponent({
   color: black;
   font-weight: 600;
 }
-span {
-  color: red;
-}
 .button-senddata {
   width: 100%;
   background-color: #134f83;
@@ -293,5 +325,8 @@ textarea {
 }
 textarea:focus {
   border: 1px solid #105efb;
+}
+.Highlight {
+  color: #ff4d4f;
 }
 </style>

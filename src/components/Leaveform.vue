@@ -27,7 +27,7 @@
         <router-link
           :to="{
             path: '/Vrequest',
-            query: { id: `${lineId}`, type: 'Sickleave' },
+            query: { id: `${lineId}`, type: 'Sickleave', status: `${status}` },
           }"
         >
           <a-button class="btu-Sickleave">
@@ -60,7 +60,7 @@
         <router-link
           :to="{
             path: '/Vrequest',
-            query: { id: `${lineId}`, type: 'Onleave' },
+            query: { id: `${lineId}`, type: 'Onleave', status: `${status}` },
           }"
         >
           <a-button class="btu-Onleave">
@@ -87,7 +87,7 @@
       </div>
 
       <div v-if="status === '1'" class="div-leave" id="div-Adminleave">
-        <a-button class="btu-Onleave">
+        <a-button class="btu-Onleave" @click="notify">
           <p
             class="topicLeave"
             :style="
@@ -105,6 +105,18 @@
           </div>
         </a-button>
       </div>
+
+      <div>
+        <a-modal :visible="visible" @cancel="handleCancel" footer="">
+          <div>
+            <a-input-search
+              placeholder="input search text"
+              style="width:100%;margin-top: 15px;"
+              @search="onSearch"
+            />
+          </div>
+        </a-modal>
+      </div>
     </div>
   </div>
 </template>
@@ -120,6 +132,7 @@ export default defineComponent({
     apiconfig: apiConfig.API_BASE_ENDPOINT,
     lineId: "" as string,
     calHeigth: 0 as number,
+    visible: false as boolean,
     status: "" as string,
     calWidth: 0 as number,
     sickLeaveAllday: 5 as number,
@@ -135,6 +148,14 @@ export default defineComponent({
     event: [] as Date[],
     descriptionEvent: "" as string,
   }),
+  methods: {
+    notify() {
+      this.visible = true;
+    },
+    handleCancel(e: object) {
+      this.visible = false;
+    },
+  },
   computed: {
     attributes(): any {
       return [
@@ -195,6 +216,7 @@ export default defineComponent({
       ];
     },
   },
+
   created() {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
