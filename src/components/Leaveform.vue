@@ -11,7 +11,6 @@
         />
       </div>
     </div>
-
     <div
       style="display: flex;
     flex-direction: column;
@@ -109,11 +108,40 @@
       <div>
         <a-modal :visible="visible" @cancel="handleCancel" footer="">
           <div>
-            <a-input-search
+            <input
+              class="search-input"
+              type="text"
               placeholder="input search text"
-              style="width:100%;margin-top: 15px;"
+              style="width:100%;margin-top: 20px;font-family: Anuphan;"
+              v-model="searchUsers"
               @search="onSearch"
             />
+          </div>
+          <div style="margin-top: 10px;">
+            <div
+              v-for="(item, index) in resultQuery"
+              :key="index"
+              style="margin-top:10px;"
+            >
+              <a-checkbox-group @change="onChange">
+                <a-checkbox :value="item.email" style="font-family: Anuphan;">
+                  <span v-if="item.image === null" style="margin-right: 10px;"
+                    ><img
+                      src="../assets/user.png"
+                      alt=""
+                      style="width:30px;height:30px;border-radius: 50%;"
+                  /></span>
+                  <span v-else style="margin-right: 10px;">
+                    <img
+                      :src="item.image.fullPath"
+                      alt=""
+                      style="width:30px;height:30px;border-radius: 50%;"
+                    />
+                  </span>
+                  {{ item.name }}
+                </a-checkbox>
+              </a-checkbox-group>
+            </div>
           </div>
         </a-modal>
       </div>
@@ -125,10 +153,13 @@
 import { defineComponent } from "vue";
 import axios from "axios";
 import apiConfig from "../config/api";
+import getallUser from "../constant/users";
 
 export default defineComponent({
   name: "Leaveform",
   data: () => ({
+    searchUsers: "",
+    allUsers: [] as object[],
     apiconfig: apiConfig.API_BASE_ENDPOINT,
     lineId: "" as string,
     calHeigth: 0 as number,
@@ -149,14 +180,33 @@ export default defineComponent({
     descriptionEvent: "" as string,
   }),
   methods: {
+    onSearch(value: string) {
+      console.log(this.searchUsers);
+      console.log(value);
+    },
+    onChange(e: any) {
+      console.log(`checked = ${e}`);
+    },
     notify() {
       this.visible = true;
     },
-    handleCancel(e: object) {
+    handleCancel() {
       this.visible = false;
     },
   },
   computed: {
+    resultQuery(): object[] {
+      if (this.searchUsers) {
+        return this.allUsers.filter((item: any) => {
+          return this.searchUsers
+            .toLowerCase()
+            .split(" ")
+            .every((v) => item.name.toLowerCase().includes(v));
+        });
+      } else {
+        return this.allUsers;
+      }
+    },
     attributes(): any {
       return [
         {
@@ -284,6 +334,7 @@ export default defineComponent({
   mounted() {
     this.calHeigth = window.innerHeight;
     this.calWidth = window.innerWidth;
+    getallUser().then((result) => (this.allUsers = result.data.users));
   },
 });
 </script>
@@ -292,6 +343,26 @@ export default defineComponent({
 @font-face {
   font-family: Anuphan;
   src: url("../fonts/Anuphan-Regular.woff") format("woff");
+}
+.search-input {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-variant: tabular-nums;
+  list-style: none;
+  font-feature-settings: "tnum";
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  padding: 4px 11px;
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 14px;
+  line-height: 1.5715;
+  background-color: #fff;
+  background-image: none;
+  border: 1px solid #d9d9d9;
+  border-radius: 2px;
+  transition: all 0.3s;
 }
 .Vleaveform {
   height: 100vh;

@@ -1,6 +1,6 @@
 <template>
   <div class="Vleaveform">
-    <Leaveform msg="Welcome to Your Vue.js + TypeScript App" />
+    <Leaveform />
   </div>
 </template>
 <script lang="ts">
