@@ -1,11 +1,14 @@
-const webpack = require("webpack");
-
 module.exports = {
-  configureWebpack: {
-    plugins: [
-      new webpack.ProvidePlugin({
-        mapboxgl: "mapbox-gl",
-      }),
-    ],
+  pluginOptions: {
+    vconsole: {
+      enable: true,
+    },
+    apollo: {
+      enableMocks: true,
+      enableEngine: true,
+      lintGQL: false,
+      typescript: true,
+    },
   },
+  transpileDependencies: ["vuetify"],
 };
