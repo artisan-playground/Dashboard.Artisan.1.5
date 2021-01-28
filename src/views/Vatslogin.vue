@@ -11,10 +11,5 @@ export default {
   components: {
     Atslogin,
   },
-  methods: {
-    login(loginForm: any) {
-      console.log(loginForm);
-    },
-  },
 };
 </script>

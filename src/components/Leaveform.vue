@@ -26,7 +26,7 @@
         <router-link
           :to="{
             path: '/Vrequest',
-            query: { id: `${lineId}`, type: 'Sickleave', status: `${status}` },
+            query: { id: `${lineId}`, type: 'Sickleave', status: status },
           }"
         >
           <a-button class="btu-Sickleave">
@@ -59,7 +59,7 @@
         <router-link
           :to="{
             path: '/Vrequest',
-            query: { id: `${lineId}`, type: 'Onleave', status: `${status}` },
+            query: { id: `${lineId}`, type: 'Onleave', status: status },
           }"
         >
           <a-button class="btu-Onleave">
@@ -108,6 +108,16 @@
       <div>
         <a-modal :visible="visible" @cancel="handleCancel" footer="">
           <div>
+            <router-link
+              :to="{
+                path: '/Vrequest',
+                query: { id: `${lineId}`, type: 'Onleave', status: status },
+              }"
+            >
+              <a-button @click="recordUsersleave">Enter</a-button>
+            </router-link>
+          </div>
+          <div>
             <input
               class="search-input"
               type="text"
@@ -123,24 +133,29 @@
               :key="index"
               style="margin-top:10px;"
             >
-              <a-checkbox-group @change="onChange">
-                <a-checkbox :value="item.email" style="font-family: Anuphan;">
-                  <span v-if="item.image === null" style="margin-right: 10px;"
-                    ><img
-                      src="../assets/user.png"
-                      alt=""
-                      style="width:30px;height:30px;border-radius: 50%;"
-                  /></span>
-                  <span v-else style="margin-right: 10px;">
-                    <img
-                      :src="item.image.fullPath"
-                      alt=""
-                      style="width:30px;height:30px;border-radius: 50%;"
-                    />
-                  </span>
-                  {{ item.name }}
-                </a-checkbox>
-              </a-checkbox-group>
+              <a-checkbox
+                :value="item.email"
+                style="font-family: Anuphan;"
+                :checked="
+                  allList.listUsers && allList.listUsers.includes(item.email)
+                "
+                @click="listUsersleave(item.email, $event)"
+              >
+                <span v-if="item.image === null" style="margin-right: 10px;"
+                  ><img
+                    src="../assets/user.png"
+                    alt=""
+                    style="width:30px;height:30px;border-radius: 50%;"
+                /></span>
+                <span v-else style="margin-right: 10px;">
+                  <img
+                    :src="item.image.fullPath"
+                    alt=""
+                    style="width:30px;height:30px;border-radius: 50%;"
+                  />
+                </span>
+                {{ item.name }}
+              </a-checkbox>
             </div>
           </div>
         </a-modal>
@@ -160,6 +175,9 @@ export default defineComponent({
   data: () => ({
     searchUsers: "",
     allUsers: [] as object[],
+    allList: {
+      listUsers: [] as string[],
+    },
     apiconfig: apiConfig.API_BASE_ENDPOINT,
     lineId: "" as string,
     calHeigth: 0 as number,
@@ -180,12 +198,20 @@ export default defineComponent({
     descriptionEvent: "" as string,
   }),
   methods: {
-    onSearch(value: string) {
-      console.log(this.searchUsers);
-      console.log(value);
+    listUsersleave(value: string, event: any) {
+      const index = this.allList.listUsers.findIndex((v) => v == value);
+      const checked = event.target.checked;
+      if (checked && index < 0) {
+        this.allList.listUsers.push(value);
+      }
+      if (!checked && index >= 0) {
+        this.allList.listUsers.splice(index, 1);
+      }
     },
-    onChange(e: any) {
-      console.log(`checked = ${e}`);
+    recordUsersleave() {
+      localStorage.removeItem("ListUsersOnleave");
+      const result: string = JSON.stringify(this.allList);
+      localStorage.setItem("ListUsersOnleave", result);
     },
     notify() {
       this.visible = true;
