@@ -305,27 +305,13 @@ export default defineComponent({
 
         this.content = Math.floor(Math.random() * 2);
 
-        axios
-          .post(`${this.apiconfig}/api/clockin`, result)
-          .then((response) => {
-            console.log("response: ", response);
-          })
-          .catch((err) => {
-            console.error(err);
-          });
+        axios.post(`${this.apiconfig}/api/clockin`, result);
 
-        axios
-          .post(`${this.apiconfig}/api/sendmassage`, {
-            clockinHistory: this.clockinHistory,
-            statusClockin: this.statusClockin,
-            id: this.idLine,
-          })
-          .then((response) => {
-            console.log("response: ", response);
-          })
-          .catch((err) => {
-            console.error(err);
-          });
+        axios.post(`${this.apiconfig}/api/sendmassage`, {
+          clockinHistory: this.clockinHistory,
+          statusClockin: this.statusClockin,
+          id: this.idLine,
+        });
       } else {
         this.approveClockin = "notapproved";
       }

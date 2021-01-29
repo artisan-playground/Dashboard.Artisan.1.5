@@ -1,7 +1,11 @@
 <template>
   <div class="From-leave">
     <div>
-      <p class="title-leave" style="top:0px">
+      <p
+        class="title-leave"
+        style="top:0px"
+        v-if="status === '2' || countUsers < 2"
+      >
         จำนวนวันลาป่วยที่เหลือ {{ remaindays }} วัน
       </p>
     </div>
@@ -146,7 +150,9 @@ export default defineComponent({
     remaindays: 0 as number,
     imageUrl: "" as string,
     Since: "" as string,
+    emailUsers: "" as string,
     Until: "" as string,
+    countUsers: 0 as number,
   }),
   methods: {
     changetypeTimeperiod(e: string) {
@@ -219,22 +225,15 @@ export default defineComponent({
       return isJpgOrPng;
     },
     submitLeave() {
-      axios
-        .post(`${this.apiconfig}/api/request`, {
-          lineId: this.lineId,
-          Leavetype: this.typeleave,
-          Timeperiod: this.typeTimeperiod,
-          Since: this.leaveStartdate,
-          Until: this.leaveEnddate,
-          CountLeave: this.dateLeave,
-          Leaveevent: this.detailLeave,
-        })
-        .then((response) => {
-          console.log("response: ", response);
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+      axios.post(`${this.apiconfig}/api/request`, {
+        lineId: this.lineId,
+        Leavetype: this.typeleave,
+        Timeperiod: this.typeTimeperiod,
+        Since: this.leaveStartdate,
+        Until: this.leaveEnddate,
+        CountLeave: this.dateLeave,
+        Leaveevent: this.detailLeave,
+      });
 
       if (this.typeTimeperiod === "ครึ่งวัน(เช้า)") {
         this.Since = `${this.leaveStartdate}T09:00:00`;
@@ -247,28 +246,33 @@ export default defineComponent({
         this.Until = `${this.leaveEnddate}T18:00:00`;
       }
 
-      axios
-        .post(`${this.apiconfig}/api/createEvents`, {
-          Sammary: this.typeleave,
-          description: this.detailLeave,
-          Since: this.Since,
-          Until: this.Until,
-        })
-        .then((response) => {
-          console.log("response: ", response);
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+      axios.post(`${this.apiconfig}/api/createEvents`, {
+        Sammary: this.typeleave,
+        description: this.detailLeave,
+        Since: this.Since,
+        Until: this.Until,
+      });
     },
   },
   mounted() {
+    const list: object | any = localStorage.getItem("ListUsersOnleave");
+    const allList = JSON.parse(list);
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    this.lineId = `${urlParams.get("id")}`;
+    this.countUsers = allList.listUsers.length;
     this.status = `${urlParams.get("status")}`;
+    if (this.status === "1") {
+      if (this.countUsers === 1) {
+        this.emailUsers = allList.listUsers[0];
+      }
+    }
+    const result = {
+      UserlineId: this.lineId = `${urlParams.get("id")}`,
+      status: this.status,
+      username: this.emailUsers,
+    };
     axios
-      .post(`${this.apiconfig}/api/getrequest`, { UserlineId: this.lineId })
+      .post(`${this.apiconfig}/api/getrequest`, result)
       .then((response) => {
         if (response.data.responseCode === 200) {
           this.remaindays = response.data.responseBody.Sickleave;
