@@ -1,0 +1,44 @@
+.From-leave {
+  padding: 0 15px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+textarea {
+  border: 1px solid #d9d9d9;
+  border-radius: 2px;
+  transition: all 0.3s;
+}
+.topic-leave {
+  color: black;
+  font-weight: 600;
+}
+
+.button-senddata {
+  width: 100%;
+  background-color: #134f83;
+  color: white;
+}
+
+.ant-calendar-picker {
+  width: 48% !important;
+  border-radius: 2px;
+}
+.title-leave {
+  color: #105efb;
+  font-weight: 600;
+}
+.ant-upload {
+  padding: 0px !important;
+}
+textarea {
+  border-radius: 2px;
+  transition: all 0.3s;
+}
+textarea:focus {
+  border: 1px solid #105efb;
+}
+.Highlight {
+  color: #ff4d4f;
+}

@@ -4,7 +4,7 @@
       <p
         class="title-leave"
         style="top:0px"
-        v-if="status === '2' || countUsers < 2"
+        v-if="typeLeaves === '' || countUsers < 2"
       >
         จำนวนวันลาป่วยที่เหลือ {{ remaindays }} วัน
       </p>
@@ -42,13 +42,13 @@
             leaveStartdate != ''
         "
       >
-        <p class="title-leave" v-if="dateLeave < remaindays">
+        <p class="title-leave" v-if="dateLeave < remaindays || countUsers > 2">
           จำนวนวัน {{ dateLeave }} วัน
         </p>
         <p
           class="title-leave"
           style="color:red;"
-          v-else-if="dateLeave > remaindays"
+          v-else-if="dateLeave > remaindays && countUsers < 2"
         >
           จำนวนวันลาของคุณเกินจำนวนแล้ว
         </p>
@@ -123,7 +123,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import axios from "axios";
-import dayjs from "dayjs";
 import { PlusOutlined, LoadingOutlined } from "@ant-design/icons-vue";
 import { message } from "ant-design-vue";
 import apiConfig from "../config/api";
@@ -143,6 +142,7 @@ export default defineComponent({
     apiconfig: apiConfig.API_BASE_ENDPOINT,
     lineId: "" as string,
     status: "" as string,
+    typeLeaves: "" as string,
     detailLeave: "" as string,
     typeTimeperiod: "" as string,
     typeleave: "ลากิจ" as string,
@@ -254,29 +254,35 @@ export default defineComponent({
         this.Until = `${this.leaveEnddate}T18:00:00`;
       }
 
-      axios.post(`${this.apiconfig}/api/createEvents`, {
-        Sammary: this.typeleave,
-        description: this.detailLeave,
-        Since: this.Since,
-        Until: this.Until,
-      });
+      axios
+        .post(`${this.apiconfig}/api/createEvents`, {
+          Sammary: this.typeleave,
+          description: this.detailLeave,
+          Since: this.Since,
+          Until: this.Until,
+        })
+        .then(() => {
+          localStorage.clear();
+        });
     },
   },
   mounted() {
     const list: object | any = localStorage.getItem("ListUsersOnleave");
     const allList = JSON.parse(list);
+    this.typeLeaves = allList.typeLeaves;
+
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     this.countUsers = allList.listUsers.length;
     this.status = `${urlParams.get("status")}`;
-    if (this.status === "1") {
+    if (this.typeLeaves === "LeavesOther") {
       if (this.countUsers === 1) {
         this.emailUsers = allList.listUsers[0];
       }
     }
     const result = {
       UserlineId: this.lineId = `${urlParams.get("id")}`,
-      status: this.status,
+      status: this.typeLeaves,
       username: this.emailUsers,
     };
     axios
@@ -296,41 +302,5 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.From-leave {
-  padding: 0 15px;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-}
-.topic-leave {
-  color: black;
-  font-weight: 600;
-}
-.button-senddata {
-  width: 100%;
-  background-color: #134f83;
-  color: white;
-}
-
-.ant-calendar-picker {
-  width: 48% !important;
-
-  border-radius: 2px;
-}
-.title-leave {
-  color: #105efb;
-  font-weight: 600;
-}
-textarea {
-  border: 1px solid #d9d9d9;
-  border-radius: 2px;
-  transition: all 0.3s;
-}
-textarea:focus {
-  border: 1px solid #105efb;
-}
-.Highlight {
-  color: #ff4d4f;
-}
+@import "../assets/styles/Requestform.css";
 </style>
