@@ -108,14 +108,7 @@
       <div>
         <a-modal :visible="visible" @cancel="handleCancel" footer="">
           <div>
-            <router-link
-              :to="{
-                path: '/Vrequest',
-                query: { id: `${lineId}`, type: 'Onleave', status: status },
-              }"
-            >
-              <a-button @click="recordUsersleave">Enter</a-button>
-            </router-link>
+            <a-button @click="recordUsersleave">Enter</a-button>
           </div>
           <div>
             <input
@@ -169,6 +162,7 @@ import { defineComponent } from "vue";
 import axios from "axios";
 import apiConfig from "../config/api";
 import getallUser from "../constant/users";
+import { message } from "ant-design-vue";
 
 export default defineComponent({
   name: "Leaveform",
@@ -176,6 +170,7 @@ export default defineComponent({
     searchUsers: "",
     allUsers: [] as object[],
     allList: {
+      typeLeaves: "LeavesOther" as string,
       listUsers: [] as string[],
     },
     apiconfig: apiConfig.API_BASE_ENDPOINT,
@@ -209,9 +204,16 @@ export default defineComponent({
       }
     },
     recordUsersleave() {
-      localStorage.removeItem("ListUsersOnleave");
-      const result: string = JSON.stringify(this.allList);
-      localStorage.setItem("ListUsersOnleave", result);
+      if (this.allList.listUsers.length < 1) {
+        message.error("Please select the name you wish to take leave from.", 2);
+      } else {
+        this.$router.push(
+          `/Vrequest?id=${this.lineId}&status=${this.status}&type=Onleave`
+        );
+        localStorage.removeItem("ListUsersOnleave");
+        const result: string = JSON.stringify(this.allList);
+        localStorage.setItem("ListUsersOnleave", result);
+      }
     },
     notify() {
       this.visible = true;
@@ -453,5 +455,8 @@ span {
   box-sizing: border-box;
   border: none;
   border-radius: 0px;
+}
+.ant-message span {
+  font-family: Anuphan !important;
 }
 </style>

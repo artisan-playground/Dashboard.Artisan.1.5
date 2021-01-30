@@ -42,13 +42,13 @@
             leaveStartdate != ''
         "
       >
-        <p class="title-leave" v-if="dateLeave < remaindays">
+        <p class="title-leave" v-if="dateLeave < remaindays || countUsers > 2">
           จำนวนวัน {{ dateLeave }} วัน
         </p>
         <p
           class="title-leave"
           style="color:red;"
-          v-else-if="dateLeave > remaindays"
+          v-else-if="dateLeave > remaindays && countUsers < 2"
         >
           จำนวนวันลาของคุณเกินจำนวนแล้ว
         </p>
@@ -136,6 +136,7 @@ export default defineComponent({
     PlusOutlined,
   },
   data: () => ({
+    typeLeaves: "" as string,
     apiconfig: apiConfig.API_BASE_ENDPOINT,
     lineId: "" as string,
     status: "" as string,
@@ -149,10 +150,11 @@ export default defineComponent({
     dateLeave: 0 as number,
     remaindays: 0 as number,
     imageUrl: "" as string,
-    Since: "" as string,
+    since: "" as string,
     emailUsers: "" as string,
-    Until: "" as string,
+    until: "" as string,
     countUsers: 0 as number,
+    leaveList: [] as string[],
   }),
   methods: {
     changetypeTimeperiod(e: string) {
@@ -225,50 +227,69 @@ export default defineComponent({
       return isJpgOrPng;
     },
     submitLeave() {
-      axios.post(`${this.apiconfig}/api/request`, {
-        lineId: this.lineId,
-        Leavetype: this.typeleave,
-        Timeperiod: this.typeTimeperiod,
-        Since: this.leaveStartdate,
-        Until: this.leaveEnddate,
-        CountLeave: this.dateLeave,
-        Leaveevent: this.detailLeave,
-      });
-
-      if (this.typeTimeperiod === "ครึ่งวัน(เช้า)") {
-        this.Since = `${this.leaveStartdate}T09:00:00`;
-        this.Until = `${this.leaveEnddate}T13:00:00`;
-      } else if (this.typeTimeperiod === "ครึ่งวัน(บ่าย)") {
-        this.Since = `${this.leaveStartdate}T13:00:00`;
-        this.Until = `${this.leaveEnddate}T18:00:00`;
+      if (this.typeLeaves === "LeavesOther") {
+        axios.post(`${this.apiconfig}/api/Adminrequest`, {
+          lineId: this.lineId,
+          Leavetype: this.typeleave,
+          Timeperiod: this.typeTimeperiod,
+          Since: this.leaveStartdate,
+          Until: this.leaveEnddate,
+          CountLeave: this.dateLeave,
+          Leaveevent: this.detailLeave,
+          leaveList: this.leaveList,
+        });
       } else {
-        this.Since = `${this.leaveStartdate}T9:00:00`;
-        this.Until = `${this.leaveEnddate}T18:00:00`;
+        axios.post(`${this.apiconfig}/api/request`, {
+          lineId: this.lineId,
+          Leavetype: this.typeleave,
+          Timeperiod: this.typeTimeperiod,
+          Since: this.leaveStartdate,
+          Until: this.leaveEnddate,
+          CountLeave: this.dateLeave,
+          Leaveevent: this.detailLeave,
+        });
       }
 
-      axios.post(`${this.apiconfig}/api/createEvents`, {
-        Sammary: this.typeleave,
-        description: this.detailLeave,
-        Since: this.Since,
-        Until: this.Until,
-      });
+      if (this.typeTimeperiod === "ครึ่งวัน(เช้า)") {
+        this.since = `${this.leaveStartdate}T09:00:00`;
+        this.until = `${this.leaveEnddate}T13:00:00`;
+      } else if (this.typeTimeperiod === "ครึ่งวัน(บ่าย)") {
+        this.since = `${this.leaveStartdate}T13:00:00`;
+        this.until = `${this.leaveEnddate}T18:00:00`;
+      } else {
+        this.since = `${this.leaveStartdate}T9:00:00`;
+        this.until = `${this.leaveEnddate}T18:00:00`;
+      }
+
+      axios
+        .post(`${this.apiconfig}/api/createEvents`, {
+          Sammary: this.typeleave,
+          description: this.detailLeave,
+          Since: this.since,
+          Until: this.until,
+        })
+        .then(() => {
+          localStorage.clear();
+        });
     },
   },
   mounted() {
     const list: object | any = localStorage.getItem("ListUsersOnleave");
     const allList = JSON.parse(list);
+    this.typeLeaves = allList.typeLeaves;
+    this.leaveList = allList.listUsers;
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     this.countUsers = allList.listUsers.length;
     this.status = `${urlParams.get("status")}`;
-    if (this.status === "1") {
+    if (this.typeLeaves === "LeavesOther") {
       if (this.countUsers === 1) {
         this.emailUsers = allList.listUsers[0];
       }
     }
     const result = {
       UserlineId: this.lineId = `${urlParams.get("id")}`,
-      status: this.status,
+      status: this.typeLeaves,
       username: this.emailUsers,
     };
     axios
@@ -287,48 +308,5 @@ export default defineComponent({
 });
 </script>
 <style scoped>
-.From-leave {
-  padding: 0 15px;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-}
-textarea {
-  border: 1px solid #d9d9d9;
-  border-radius: 2px;
-  transition: all 0.3s;
-}
-.topic-leave {
-  color: black;
-  font-weight: 600;
-}
-
-.button-senddata {
-  width: 100%;
-  background-color: #134f83;
-  color: white;
-}
-
-.ant-calendar-picker {
-  width: 48% !important;
-  border-radius: 2px;
-}
-.title-leave {
-  color: #105efb;
-  font-weight: 600;
-}
-.ant-upload {
-  padding: 0px !important;
-}
-textarea {
-  border-radius: 2px;
-  transition: all 0.3s;
-}
-textarea:focus {
-  border: 1px solid #105efb;
-}
-.Highlight {
-  color: #ff4d4f;
-}
+@import "../assets/styles/Requestform.css";
 </style>
