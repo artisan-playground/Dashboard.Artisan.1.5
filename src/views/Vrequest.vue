@@ -1,5 +1,21 @@
 <template>
   <div class="Vrequest" style="font-family: Anuphan;">
+    <div id="components-layout-demo-basic">
+      <a-layout>
+        <a-layout-header
+          ><a-row>
+            <span
+              class="btu-Clone"
+              style="font-family: Anuphan;"
+              @click="$router.go(-1)"
+            >
+              X
+            </span>
+            <span>Leave form</span>
+          </a-row></a-layout-header
+        >
+      </a-layout>
+    </div>
     <a-tabs default-active-key="Onleave" v-if="typeLeave === 'Onleave'">
       <a-tab-pane key="Onleave" tab="ลากิจ">
         <Onleaveform />
@@ -41,10 +57,8 @@ export default defineComponent({
 });
 </script>
 <style scoped>
-@font-face {
-  font-family: Anuphan;
-  src: url("../fonts/Anuphan-Regular.woff") format("woff");
-}
+@import "../assets/styles/Titlebar.css";
+
 .Vonleave {
   display: flex;
   flex-direction: column;

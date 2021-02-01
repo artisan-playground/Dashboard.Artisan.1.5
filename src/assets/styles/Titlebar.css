@@ -1,0 +1,36 @@
+@font-face {
+  font-family: Anuphan;
+  src: url("../../fonts/Anuphan-Regular.woff") format("woff");
+}
+#components-layout-demo-basic {
+  position: sticky;
+  font-family: Anuphan;
+  text-align: center;
+}
+#components-layout-demo-basic .ant-layout-header {
+  text-align: center;
+  background: #262626;
+  color: #fff;
+  font-size: 18px;
+  padding: 0 15px;
+}
+#components-layout-demo-basic > .ant-layout {
+  margin-bottom: 48px;
+}
+#components-layout-demo-basic > .ant-layout:last-child {
+  margin: 0;
+}
+.btu-Clone {
+  float: left;
+  font-size: 18px;
+  border: none;
+  background: none !important;
+  cursor: pointer;
+}
+.btu-Enter {
+  font-size: 18px;
+  float: right;
+  border: none;
+  background: none !important;
+  cursor: pointer;
+}

@@ -6,7 +6,7 @@
           is-expanded
           :columns="$screens({ lg: 2 }, 1)"
           :min-date="new Date()"
-          :attributes="attributes"
+          :attributes="allEvents"
           style="font-family: Anuphan;"
         />
       </div>
@@ -23,70 +23,56 @@
         id="div-Sickleave"
         :style="`${status === '1' ? `height: 30%` : `height:40%`};`"
       >
-        <router-link
-          :to="{
-            path: '/Vrequest',
-            query: { id: `${lineId}`, type: 'Sickleave', status: status },
-          }"
-        >
-          <a-button class="btu-Sickleave">
-            <p
-              class="topicLeave"
-              :style="
-                `${calWidth > 650 ? `font-size: 16px` : `font-size: 14px`};`
-              "
+        <a-button class="btu-Sickleave" @click="gotoSickleaves">
+          <p
+            class="topicLeave"
+            :style="
+              `${calWidth > 650 ? `font-size: 16px` : `font-size: 14px`};`
+            "
+          >
+            ลาป่วย
+          </p>
+          <div
+            :style="
+              `${calWidth > 650 ? `font-size: 14px` : `font-size: 12px`};`
+            "
+          >
+            <span class="contentLeave" style="margin-right: 1em;"
+              >ใช้ไป {{ sickLeaveUse }} วัน</span
             >
-              ลาป่วย
-            </p>
-            <div
-              :style="
-                `${calWidth > 650 ? `font-size: 14px` : `font-size: 12px`};`
-              "
-            >
-              <span class="contentLeave" style="margin-right: 1em;"
-                >ใช้ไป {{ sickLeaveUse }} วัน</span
-              >
-              <span class="contentLeave">เหลือ {{ remainSickLeave }} วัน</span>
-            </div>
-          </a-button>
-        </router-link>
+            <span class="contentLeave">เหลือ {{ remainSickLeave }} วัน</span>
+          </div>
+        </a-button>
       </div>
       <div
         class="div-leave"
         id="div-Onleave"
         :style="`${status === '1' ? `height: 30%` : `height:40%`};`"
       >
-        <router-link
-          :to="{
-            path: '/Vrequest',
-            query: { id: `${lineId}`, type: 'Onleave', status: status },
-          }"
-        >
-          <a-button class="btu-Onleave">
-            <p
-              class="topicLeave"
-              :style="
-                `${calWidth > 650 ? `font-size: 16px` : `font-size: 14px`};`
-              "
+        <a-button class="btu-Onleave" @click="gotoOnleaves">
+          <p
+            class="topicLeave"
+            :style="
+              `${calWidth > 650 ? `font-size: 16px` : `font-size: 14px`};`
+            "
+          >
+            ลากิจ
+          </p>
+          <div
+            :style="
+              `${calWidth > 650 ? `font-size: 14px` : `font-size: 12px`};`
+            "
+          >
+            <span class="contentLeave" style="margin-right: 1em;"
+              >ใช้ไป {{ onLeaveUse }} วัน</span
             >
-              ลากิจ
-            </p>
-            <div
-              :style="
-                `${calWidth > 650 ? `font-size: 14px` : `font-size: 12px`};`
-              "
-            >
-              <span class="contentLeave" style="margin-right: 1em;"
-                >ใช้ไป {{ onLeaveUse }} วัน</span
-              >
-              <span class="contentLeave">เหลือ {{ remainOnLeave }} วัน</span>
-            </div>
-          </a-button>
-        </router-link>
+            <span class="contentLeave">เหลือ {{ remainOnLeave }} วัน</span>
+          </div>
+        </a-button>
       </div>
 
       <div v-if="status === '1'" class="div-leave" id="div-Adminleave">
-        <a-button class="btu-Onleave" @click="notify">
+        <a-button class="btu-Onleave" @click="goTopage">
           <p
             class="topicLeave"
             :style="
@@ -104,53 +90,13 @@
           </div>
         </a-button>
       </div>
-
       <div>
         <a-modal :visible="visible" @cancel="handleCancel" footer="">
           <div>
             <a-button @click="recordUsersleave">Enter</a-button>
           </div>
-          <div>
-            <input
-              class="search-input"
-              type="text"
-              placeholder="input search text"
-              style="width:100%;margin-top: 20px;font-family: Anuphan;"
-              v-model="searchUsers"
-              @search="onSearch"
-            />
-          </div>
-          <div style="margin-top: 10px;">
-            <div
-              v-for="(item, index) in resultQuery"
-              :key="index"
-              style="margin-top:10px;"
-            >
-              <a-checkbox
-                :value="item.email"
-                style="font-family: Anuphan;"
-                :checked="
-                  allList.listUsers && allList.listUsers.includes(item.email)
-                "
-                @click="listUsersleave(item.email, $event)"
-              >
-                <span v-if="item.image === null" style="margin-right: 10px;"
-                  ><img
-                    src="../assets/user.png"
-                    alt=""
-                    style="width:30px;height:30px;border-radius: 50%;"
-                /></span>
-                <span v-else style="margin-right: 10px;">
-                  <img
-                    :src="item.image.fullPath"
-                    alt=""
-                    style="width:30px;height:30px;border-radius: 50%;"
-                  />
-                </span>
-                {{ item.name }}
-              </a-checkbox>
-            </div>
-          </div>
+
+          <div style="margin-top: 10px;"></div>
         </a-modal>
       </div>
     </div>
@@ -161,18 +107,10 @@
 import { defineComponent } from "vue";
 import axios from "axios";
 import apiConfig from "../config/api";
-import getallUser from "../constant/users";
-import { message } from "ant-design-vue";
 
 export default defineComponent({
   name: "Leaveform",
   data: () => ({
-    searchUsers: "",
-    allUsers: [] as object[],
-    allList: {
-      typeLeaves: "LeavesOther" as string,
-      listUsers: [] as string[],
-    },
     apiconfig: apiConfig.API_BASE_ENDPOINT,
     lineId: "" as string,
     calHeigth: 0 as number,
@@ -188,110 +126,22 @@ export default defineComponent({
     descriptionLeave: "" as string,
     holiday: [] as Date[],
     leave: [] as Date[],
-    leaves: [] as any[],
+    leaves: [] as object[],
     event: [] as Date[],
+    allEvents: [] as object[],
     descriptionEvent: "" as string,
   }),
   methods: {
-    listUsersleave(value: string, event: any) {
-      const index = this.allList.listUsers.findIndex((v) => v == value);
-      const checked = event.target.checked;
-      if (checked && index < 0) {
-        this.allList.listUsers.push(value);
-      }
-      if (!checked && index >= 0) {
-        this.allList.listUsers.splice(index, 1);
-      }
+    gotoSickleaves() {
+      localStorage.removeItem("ListUsersOnleave");
+      this.$router.push(`/Vrequest?id=${this.lineId}&status=1&type=Sickleave`);
     },
-    recordUsersleave() {
-      if (this.allList.listUsers.length < 1) {
-        message.error("Please select the name you wish to take leave from.", 2);
-      } else {
-        this.$router.push(
-          `/Vrequest?id=${this.lineId}&status=${this.status}&type=Onleave`
-        );
-        localStorage.removeItem("ListUsersOnleave");
-        const result: string = JSON.stringify(this.allList);
-        localStorage.setItem("ListUsersOnleave", result);
-      }
+    gotoOnleaves() {
+      localStorage.removeItem("ListUsersOnleave");
+      this.$router.push(`/Vrequest?id=${this.lineId}&status=1&type=Onleave`);
     },
-    notify() {
-      this.visible = true;
-    },
-    handleCancel() {
-      this.visible = false;
-    },
-  },
-  computed: {
-    resultQuery(): object[] {
-      if (this.searchUsers) {
-        return this.allUsers.filter((item: any) => {
-          return this.searchUsers
-            .toLowerCase()
-            .split(" ")
-            .every((v) => item.name.toLowerCase().includes(v));
-        });
-      } else {
-        return this.allUsers;
-      }
-    },
-    attributes(): any {
-      return [
-        {
-          highlight: {
-            color: "blue",
-            fillMode: "light",
-          },
-          dates: new Date(),
-        },
-        {
-          dot: {
-            color: "red",
-            fillMode: "light",
-          },
-          dates: this.holiday,
-          popover: {
-            label: "Holiday",
-            visibility: "focus",
-          },
-        },
-        {
-          dates: this.event,
-          dot: {
-            color: "blue",
-            class: "opacity-75",
-          },
-          popover: {
-            label: this.descriptionEvent,
-            visibility: "focus",
-          },
-        },
-        {
-          dates: this.leave,
-          dot: {
-            color: "yellow",
-          },
-          popover: {
-            label: "Leave",
-            visibility: "focus",
-          },
-        },
-        {
-          highlight: {
-            start: { color: "yellow", fillMode: "outline" },
-            base: {
-              color: "yellow",
-              fillMode: "light",
-            },
-            end: { color: "yellow", fillMode: "outline" },
-          },
-          dates: this.leaves,
-          popover: {
-            label: "Leave",
-            visibility: "focus",
-          },
-        },
-      ];
+    goTopage() {
+      this.$router.push(`/Listleaves?id=${this.lineId}&status=1`);
     },
   },
 
@@ -321,48 +171,112 @@ export default defineComponent({
       .catch((err) => {
         console.error(err);
       });
+  },
+  mounted() {
+    this.calHeigth = window.innerHeight;
+    this.calWidth = window.innerWidth;
+
     axios
       .post(`${this.apiconfig}/api/getEvents`)
       .then((response) => {
         const result = response.data.responseBody;
-        const allEvent: Date[] = [];
-        const allHoliday: Date[] = [];
-        const allLeave: Date[] = [];
+
         const allLeaves: object[] = [];
+        const allEvents: object[] = [
+          {
+            highlight: {
+              color: "blue",
+              fillMode: "light",
+            },
+            dates: new Date(),
+          },
+        ];
         result.map(
           (event: any, i: number, dateTimeStart: Date, dateTimeEnd: Date) => {
-            dateTimeStart = new Date(event.start.dateTime);
-            dateTimeEnd = new Date(event.end.dateTime);
+            dateTimeStart = new Date(event.start.dateTime || event.start.date);
+            dateTimeEnd = new Date(event.end.dateTime || event.end.date);
+            const timeStart = Date.parse(`${dateTimeStart}`);
+            const timeEnd = Date.parse(`${dateTimeEnd}`);
+            const resultTime = timeEnd - timeStart;
             if (event.colorId === "5") {
-              const timeStart = Date.parse(`${dateTimeStart}`);
-              const timeEnd = Date.parse(`${dateTimeEnd}`);
-              const resultTime = timeEnd - timeStart;
               if (resultTime > 86400000) {
-                allLeaves.push({ start: dateTimeStart, end: dateTimeEnd });
+                allEvents.push({
+                  highlight: {
+                    start: { color: "yellow", fillMode: "outline" },
+                    base: {
+                      color: "yellow",
+                      fillMode: "light",
+                    },
+                    end: { color: "yellow", fillMode: "outline" },
+                  },
+                  dates: { start: dateTimeStart, end: dateTimeEnd },
+                  popover: {
+                    label: event.summary,
+                    visibility: "focus",
+                  },
+                });
               } else {
-                allLeave.push(dateTimeStart);
+                allEvents.push({
+                  dates: dateTimeStart,
+                  dot: {
+                    color: "yellow",
+                  },
+                  popover: {
+                    label: event.summary,
+                    visibility: "focus",
+                  },
+                });
               }
             } else if (event.colorId === "11") {
-              allHoliday.push(dateTimeStart);
+              if (resultTime > 86400000) {
+                allEvents.push({
+                  highlight: {
+                    start: { color: "red", fillMode: "outline" },
+                    base: {
+                      color: "red",
+                      fillMode: "light",
+                    },
+                    end: { color: "red", fillMode: "outline" },
+                  },
+                  dates: { start: dateTimeStart, end: dateTimeEnd },
+                  popover: {
+                    label: event.summary,
+                    visibility: "focus",
+                  },
+                });
+              } else {
+                allEvents.push({
+                  dates: dateTimeStart,
+                  dot: {
+                    color: "red",
+                  },
+                  popover: {
+                    label: event.summary,
+                    visibility: "focus",
+                  },
+                });
+              }
             } else {
-              allEvent.push(dateTimeStart);
+              allEvents.push({
+                dates: dateTimeStart,
+                dot: {
+                  color: "blue",
+                },
+                popover: {
+                  label: event.summary,
+                  visibility: "focus",
+                },
+              });
             }
             this.descriptionEvent = `${event.summary}`;
           }
         );
         this.leaves = allLeaves;
-        this.holiday = allHoliday;
-        this.leave = allLeave;
-        this.event = allEvent;
+        this.allEvents = allEvents;
       })
       .catch((err) => {
         console.error(err);
       });
-  },
-  mounted() {
-    this.calHeigth = window.innerHeight;
-    this.calWidth = window.innerWidth;
-    getallUser().then((result) => (this.allUsers = result.data.users));
   },
 });
 </script>
@@ -372,26 +286,7 @@ export default defineComponent({
   font-family: Anuphan;
   src: url("../fonts/Anuphan-Regular.woff") format("woff");
 }
-.search-input {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-variant: tabular-nums;
-  list-style: none;
-  font-feature-settings: "tnum";
-  position: relative;
-  display: inline-block;
-  width: 100%;
-  padding: 4px 11px;
-  color: rgba(0, 0, 0, 0.65);
-  font-size: 14px;
-  line-height: 1.5715;
-  background-color: #fff;
-  background-image: none;
-  border: 1px solid #d9d9d9;
-  border-radius: 2px;
-  transition: all 0.3s;
-}
+
 .Vleaveform {
   height: 100vh;
   background: #ffffff;
@@ -428,6 +323,7 @@ export default defineComponent({
     inset -1px 0px 0px #f2f2f2, inset 1px 0px 0px #f2f2f2;
 }
 .calendar {
+  text-align: center;
   padding: 15px;
   background: #e9f0ff;
 }

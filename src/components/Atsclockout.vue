@@ -4,8 +4,6 @@
     id="v-model-textarea"
     :style="`height:${calHeigth}px !important`"
   >
-    <h1>Daily Clock out</h1>
-
     <p class="head">เวลานอนชอบละเมอ แต่เวลาเจอเธอชอบละลาย</p>
     <div class="atsco">
       <p class="daily"><span color="red">* </span>วันนี้ทำอะไรบ้าง</p>
@@ -36,12 +34,15 @@
     </div>
     <div class="atsco">
       <p class="daily">Projects ที่ทำ</p>
-      <input
-        class="box"
-        name="project"
-        v-model="project"
+      <a-select
         placeholder="ชื่อ Project"
-      />
+        style="width: 95%;font-family: Anuphan;text-align:start;"
+        @change="handleChange"
+      >
+        <a-select-option v-for="item in allProject" :key="item.projectName">
+          {{ item.projectName }}
+        </a-select-option>
+      </a-select>
     </div>
     <div class="atsco">
       <p class="daily">Tasks ที่ทำในวันนี้</p>
@@ -63,9 +64,9 @@
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
-
 import axios from "axios";
 import apiConfig from "../config/api";
+import getProject from "../constant/project";
 export default defineComponent({
   name: "Atsclockout",
   data: () => ({
@@ -75,8 +76,14 @@ export default defineComponent({
     problem: "" as string,
     project: "" as string,
     tasks: "" as string,
+    visible: false as boolean,
+    massageCode: 0 as number,
+    allProject: [] as object[],
   }),
   methods: {
+    handleChange(value: string) {
+      this.project = value;
+    },
     clockout() {
       const quetyString = window.location.search;
       const idLine = new URLSearchParams(quetyString);
@@ -89,31 +96,30 @@ export default defineComponent({
         Tasks: this.tasks,
         clockout: "clockout",
       };
-
       axios
         .post(`${this.apiconfig}/api/clockout`, result)
-        .then((response) => {
-          if (response.data.responseCode === 200) {
-            alert("สำเร็จแล้ว");
-            axios.post(`${this.apiconfig}/api/sendmassage`, {
-              id: idLine.get("id"),
-              clockout: "Success",
-            });
-          } else {
-            alert("บ่าสำเร็จเด้อ");
-          }
+        .then(() => {
+          axios.post(`${this.apiconfig}/api/sendmassage`, {
+            id: idLine.get("id"),
+            clockout: "Success",
+          });
+
+          location.href = "https://line.me/R/ti/p/%40886oreka";
         })
         .catch((error) => {
           alert(error);
         });
     },
   },
+  mounted() {
+    getProject().then((result) => (this.allProject = result.data.projects));
+  },
 });
 </script>
 <style scoped>
 * {
   margin: 0;
-  padding: 0;
+  padding: 15;
   box-sizing: border-box;
 }
 .Vatsclockout {
@@ -134,38 +140,32 @@ export default defineComponent({
   text-align: center;
   color: #333333;
 }
-
 .atsco {
   flex-direction: column;
   padding: 3px;
   position: static;
 }
-
 textarea.box {
   height: 15vh;
   width: 95%;
   border-radius: 2px;
+  padding-left: 10px;
 }
-
 textarea::placeholder {
-  text-indent: 0.5em;
   font-size: 14px;
   font-family: Anuphan;
 }
-
 input.box {
   height: 32px;
   width: 95%;
+  padding-left: 10px;
 }
-
 input::placeholder {
-  text-indent: 0.5em;
   font-size: 14px;
   font-family: Anuphan;
   font-style: normal;
   font-weight: normal;
 }
-
 p.daily {
   font-family: Anuphan;
   font-style: normal;
@@ -175,7 +175,6 @@ p.daily {
   text-align: justify;
   text-indent: 0.6em;
 }
-
 .round-button {
   height: 150px;
   width: 150px;
@@ -189,18 +188,15 @@ p.daily {
   margin: 50px;
   box-shadow: 0 0 20px gray;
 }
-
 .round-button:disabled {
   background-color: rgb(165, 165, 165);
   border: 1px solid rgb(165, 165, 165);
 }
-
 .round-button:active {
   background-color: #315ac9;
   box-shadow: 0 5px rgb(165, 165, 165);
   transform: translateY(2px);
 }
-
 span {
   color: red;
 }

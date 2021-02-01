@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Clockin from "../views/Clockin.vue";
+import Listleaves from "../views/Listleaves.vue";
 import Vatsclockout from "../views/Vatsclockout.vue";
 import Vatslogin from "../views/Vatslogin.vue";
 import Vleaveform from "../views/Vleaveform.vue";
@@ -10,6 +11,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/Clockin",
     name: "Clockin",
     component: Clockin,
+  },
+  {
+    path: "/Listleaves",
+    name: "Listleaves",
+    component: Listleaves,
   },
   {
     path: "/Vatslogin",

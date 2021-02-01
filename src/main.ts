@@ -5,6 +5,7 @@ import {
   DatePicker,
   Icon,
   Input,
+  Layout,
   Modal,
   Select,
   Tabs,
@@ -20,6 +21,7 @@ app.use(DatePicker);
 app.use(Calendar);
 app.use(Button);
 app.use(Select);
+app.use(Layout);
 app.use(Icon);
 app.use(Tabs);
 app.use(Checkbox);
