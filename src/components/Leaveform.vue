@@ -211,7 +211,7 @@ export default defineComponent({
                   },
                   dates: { start: dateTimeStart, end: dateTimeEnd },
                   popover: {
-                    label: event.summary,
+                    label: `${event.summary} `,
                     visibility: "focus",
                   },
                 });
@@ -222,7 +222,7 @@ export default defineComponent({
                     color: "yellow",
                   },
                   popover: {
-                    label: event.summary,
+                    label: `${event.summary} `,
                     visibility: "focus",
                   },
                 });
@@ -240,7 +240,7 @@ export default defineComponent({
                   },
                   dates: { start: dateTimeStart, end: dateTimeEnd },
                   popover: {
-                    label: event.summary,
+                    label: `${event.summary} `,
                     visibility: "focus",
                   },
                 });
@@ -251,7 +251,7 @@ export default defineComponent({
                     color: "red",
                   },
                   popover: {
-                    label: event.summary,
+                    label: `${event.summary} `,
                     visibility: "focus",
                   },
                 });
@@ -263,12 +263,12 @@ export default defineComponent({
                   color: "blue",
                 },
                 popover: {
-                  label: event.summary,
+                  label:`${event.summary} `,
                   visibility: "focus",
                 },
               });
             }
-            this.descriptionEvent = `${event.summary}`;
+            this.descriptionEvent = `${event.summary} `;
           }
         );
         this.leaves = allLeaves;

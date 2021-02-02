@@ -177,10 +177,10 @@ export default defineComponent({
         .addTo(map);
 
       const trainStationIcon = document.createElement("div");
-      trainStationIcon.style.width = "55px";
-      trainStationIcon.style.height = "55px";
+      trainStationIcon.style.width = "45px";
+      trainStationIcon.style.height = "45px";
       trainStationIcon.style.backgroundImage =
-        "url(https://img.icons8.com/plasticine/50/000000/street-view.png)";
+        "url(https://img.icons8.com/color/48/000000/user-location.png)";
 
       const markerUser = new mapboxgl.Marker(trainStationIcon, {
         anchor: "bottom",
@@ -223,19 +223,6 @@ export default defineComponent({
                 [positionUser.lngUser, positionUser.latUser],
               ],
             },
-          },
-        });
-        map.addLayer({
-          id: "route",
-          type: "line",
-          source: "route",
-          layout: {
-            "line-join": "round",
-            "line-cap": "round",
-          },
-          paint: {
-            "line-color": "#888",
-            "line-width": 3,
           },
         });
         map.addLayer({

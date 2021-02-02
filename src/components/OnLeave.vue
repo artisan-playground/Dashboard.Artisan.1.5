@@ -42,7 +42,7 @@
             leaveStartdate != ''
         "
       >
-        <p class="title-leave" v-if="dateLeave < remaindays || countUsers > 1">
+        <p class="title-leave" v-if="dateLeave < remaindays ">
           จำนวนวัน {{ dateLeave }} วัน
         </p>
         <p
@@ -111,7 +111,7 @@
         </div>
       </a-upload>
     </div>
-    <div v-if="status === '1'">
+    <div v-if="countUsers > 1">
       <p class="title-leave"><span class="Highlight">* </span> Admin ลาให้</p>
       <a-select
         mode="multiple"
@@ -154,9 +154,9 @@
           }`
         "
         :disabled="
-          Timeperiod == '' &&
-            leaveStartdate == '' &&
-            leaveEnddate == '' &&
+          Timeperiod == '' ||
+            leaveStartdate == '' ||
+            leaveEnddate == '' ||
             detailLeave == ''
         "
         >ส่ง</a-button
@@ -204,6 +204,9 @@ export default defineComponent({
     Until: "" as string,
     countUsers: 0 as number,
     leaveList: [] as object[] | object,
+    startDate:"" as string,
+    endDate:"" as string,
+    nameLeaves: "" as string
   }),
   methods: {
     addListleave(value: string | object[] | any) {
@@ -244,10 +247,12 @@ export default defineComponent({
       this.leaveEnddate = dateString;
       const dateStartAll = this.leaveStartdate.split("-");
       const dateStart = `${dateStartAll[2]}-${dateStartAll[1]}-${dateStartAll[0]}`;
+      this.startDate =dateStart
       const dateEndAll = this.leaveEnddate.split("-");
-      const endStart = `${dateEndAll[2]}-${dateEndAll[1]}-${dateEndAll[0]}`;
+      const endDate = `${dateEndAll[2]}-${dateEndAll[1]}-${dateEndAll[0]}`;
+      this.endDate = endDate
       const startDateLeave = Date.parse(dateStart);
-      const endDateLeave = Date.parse(endStart);
+      const endDateLeave = Date.parse(endDate);
       if (this.typeTimeperiod === "เต็มวัน") {
         if (endDateLeave < startDateLeave) {
           message.error("วันสุดท้ายของการลา ต้องไม่น้อยกว่าวันเริ่ม");
@@ -304,6 +309,10 @@ export default defineComponent({
           CountLeave: this.dateLeave,
           Leaveevent: this.detailLeave,
           leaveList: this.leaveList,
+          Leavefor:"admin"
+        }).then((response) => {
+          this.nameLeaves = response.data.responseBody
+          this.createEvents()
         });
       } else {
         axios.post(`${this.apiconfig}/api/Userrequest`, {
@@ -314,27 +323,38 @@ export default defineComponent({
           Until: this.leaveEnddate,
           CountLeave: this.dateLeave,
           Leaveevent: this.detailLeave,
+          Leavefor:"user"
+        }).then((response) => {
+          this.createEvents()
         });
       }
 
+      
+    },
+    createEvents(){
       if (this.typeTimeperiod === "ครึ่งวัน(เช้า)") {
-        this.Since = `${this.leaveStartdate}T09:00:00`;
-        this.Until = `${this.leaveEnddate}T13:00:00`;
+        this.Since = `${this.startDate}T09:00:00`;
+        this.Until = `${this.endDate}T13:00:00`;
       } else if (this.typeTimeperiod === "ครึ่งวัน(บ่าย)") {
-        this.Since = `${this.leaveStartdate}T13:00:00`;
-        this.Until = `${this.leaveEnddate}T18:00:00`;
+        this.Since = `${this.startDate}T13:00:00`;
+        this.Until = `${this.endDate}T18:00:00`;
       } else {
-        this.Since = `${this.leaveStartdate}T9:00:00`;
-        this.Until = `${this.leaveEnddate}T18:00:00`;
+        this.Since = `${this.startDate}T9:00:00`;
+        this.Until = `${this.endDate}T18:00:00`;
       }
+      const summary = `${this.nameLeaves} [${this.typeleave}]`
 
       axios.post(`${this.apiconfig}/api/createEvents`, {
-        Sammary: this.typeleave,
+        Leaveevent: this.detailLeave,
+        lineId: this.lineId,
+        Sammary:summary ,
+        typeLeaves: this.typeLeaves,
         description: this.detailLeave,
         Since: this.Since,
         Until: this.Until,
       });
-    },
+
+    }
   },
   mounted() {
     getallUser().then((result) => (this.allUsers = result.data.users));
@@ -361,9 +381,11 @@ export default defineComponent({
     };
     axios
       .post(`${this.apiconfig}/api/getrequest`, result)
-      .then((response) => {
+      .then((response) => {        
         if (response.data.responseCode === 200) {
           this.remaindays = response.data.responseBody.Onleave;
+          this.nameLeaves = response.data.responseBody.name
+          
         } else {
           this.remaindays = 3;
         }
