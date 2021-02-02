@@ -42,7 +42,7 @@
             leaveStartdate != ''
         "
       >
-        <p class="title-leave" v-if="dateLeave < remaindays || countUsers > 2">
+        <p class="title-leave" v-if="dateLeave < remaindays || countUsers > 1">
           จำนวนวัน {{ dateLeave }} วัน
         </p>
         <p
@@ -65,15 +65,17 @@
       </div>
       <div>
         <a-date-picker
+          :disabled-date="disabledDate"
           v-model="LeaveStartdate"
-          format="YYYY-MM-DD"
+          format="DD-MM-YYYY"
           placeholder="Select date"
           @change="changeLeaveStartDate"
         />
         <a-date-picker
+          :disabled-date="disabledDate"
           style="margin-left:4%;"
           v-model="LeaveEnddate"
-          format="YYYY-MM-DD"
+          format="DD-MM-YYYY"
           placeholder="Select date"
           @change="changeLeaveEndDate"
           :disabled="leaveStartdate === ''"
@@ -110,16 +112,60 @@
 
     <div v-if="status === '1'">
       <p class="title-leave"><span class="Highlight">* </span> Admin ลาให้</p>
-      <a-input placeholder="Member people"> </a-input>
+      <a-select
+        mode="multiple"
+        :default-value="leaveList"
+        style="width: 100%"
+        placeholder="Member people"
+        @change="addListleave"
+      >
+        <a-select-option v-for="item in allUsers" :key="item.email">
+          <span v-if="item.image === null" style="margin-right: 10px;"
+            ><img
+              src="../assets/user.png"
+              alt=""
+              style="width:20px;height:20px;border-radius: 50%;"
+          /></span>
+          <span v-else style="margin-right: 10px;">
+            <img
+              :src="item.image.fullPath"
+              alt=""
+              style="width:20px;height:20px;border-radius: 50%;"
+            />
+          </span>
+          {{ item.name }}
+        </a-select-option>
+      </a-select>
     </div>
     <div class="div-button-senddata">
-      <a-button class="button-senddata" @click="submitLeave">ส่ง</a-button>
+      <a-button
+        class="button-senddata"
+        @click="submitLeave"
+        :style="
+          `${
+            Timeperiod != '' &&
+            leaveStartdate != '' &&
+            leaveEnddate != '' &&
+            detailLeave != ''
+              ? `background: #134f83`
+              : `background: #134f8331`
+          }`
+        "
+        :disabled="
+          Timeperiod == '' &&
+            leaveStartdate == '' &&
+            leaveEnddate == '' &&
+            detailLeave == ''
+        "
+        >ส่ง</a-button
+      >
     </div>
   </div>
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
 import axios from "axios";
+import getallUser from "../constant/users";
 import { PlusOutlined, LoadingOutlined } from "@ant-design/icons-vue";
 import { message } from "ant-design-vue";
 import apiConfig from "../config/api";
@@ -154,16 +200,28 @@ export default defineComponent({
     emailUsers: "" as string,
     until: "" as string,
     countUsers: 0 as number,
+    allUsers: [] as object[],
     leaveList: [] as string[],
   }),
   methods: {
+    addListleave(value: string | object[] | any) {
+      this.leaveList = value;
+    },
+    disabledDate(current: number | object) {
+      return current && current.valueOf() < Date.now() - 86400000;
+    },
     changetypeTimeperiod(e: string) {
       this.typeTimeperiod = e;
     },
     changeLeaveStartDate(date: string, dateString: string) {
       this.leaveStartdate = dateString;
-      const startDateLeave = Date.parse(this.leaveStartdate);
-      const endDateLeave = Date.parse(this.leaveEnddate);
+      const dateStartAll = this.leaveStartdate.split("-");
+      const dateStart = `${dateStartAll[2]}-${dateStartAll[1]}-${dateStartAll[0]}`;
+      const dateEndAll = this.leaveEnddate.split("-");
+      const endStart = `${dateEndAll[2]}-${dateEndAll[1]}-${dateEndAll[0]}`;
+      const startDateLeave = Date.parse(dateStart);
+      const endDateLeave = Date.parse(endStart);
+
       if (this.leaveStartdate) {
         this.openEndDate = false;
         if (this.typeTimeperiod === "เต็มวัน") {
@@ -182,9 +240,12 @@ export default defineComponent({
     },
     changeLeaveEndDate(date: string, dateString: string) {
       this.leaveEnddate = dateString;
-
-      const startDateLeave = Date.parse(this.leaveStartdate);
-      const endDateLeave = Date.parse(this.leaveEnddate);
+      const dateStartAll = this.leaveStartdate.split("-");
+      const dateStart = `${dateStartAll[2]}-${dateStartAll[1]}-${dateStartAll[0]}`;
+      const dateEndAll = this.leaveEnddate.split("-");
+      const endStart = `${dateEndAll[2]}-${dateEndAll[1]}-${dateEndAll[0]}`;
+      const startDateLeave = Date.parse(dateStart);
+      const endDateLeave = Date.parse(endStart);
 
       if (this.typeTimeperiod === "เต็มวัน") {
         if (endDateLeave < startDateLeave) {
@@ -239,7 +300,7 @@ export default defineComponent({
           leaveList: this.leaveList,
         });
       } else {
-        axios.post(`${this.apiconfig}/api/request`, {
+        axios.post(`${this.apiconfig}/api/Userrequest`, {
           lineId: this.lineId,
           Leavetype: this.typeleave,
           Timeperiod: this.typeTimeperiod,
@@ -261,32 +322,33 @@ export default defineComponent({
         this.until = `${this.leaveEnddate}T18:00:00`;
       }
 
-      axios
-        .post(`${this.apiconfig}/api/createEvents`, {
-          Sammary: this.typeleave,
-          description: this.detailLeave,
-          Since: this.since,
-          Until: this.until,
-        })
-        .then(() => {
-          localStorage.clear();
-        });
+      axios.post(`${this.apiconfig}/api/createEvents`, {
+        Sammary: this.typeleave,
+        description: this.detailLeave,
+        Since: this.since,
+        Until: this.until,
+      });
     },
   },
   mounted() {
-    const list: object | any = localStorage.getItem("ListUsersOnleave");
-    const allList = JSON.parse(list);
-    this.typeLeaves = allList.typeLeaves;
-    this.leaveList = allList.listUsers;
+    getallUser().then((result) => (this.allUsers = result.data.users));
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    this.countUsers = allList.listUsers.length;
     this.status = `${urlParams.get("status")}`;
-    if (this.typeLeaves === "LeavesOther") {
-      if (this.countUsers === 1) {
-        this.emailUsers = allList.listUsers[0];
+    if (localStorage.getItem("ListUsersOnleave")) {
+      const list: object | any = localStorage.getItem("ListUsersOnleave");
+      const allList = JSON.parse(list);
+      this.typeLeaves = allList.typeLeaves;
+      this.leaveList = allList.listUsers;
+      this.countUsers = allList.listUsers.length;
+
+      if (this.typeLeaves === "LeavesOther") {
+        if (this.countUsers === 1) {
+          this.emailUsers = allList.listUsers[0];
+        }
       }
     }
+
     const result = {
       UserlineId: this.lineId = `${urlParams.get("id")}`,
       status: this.typeLeaves,
