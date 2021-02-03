@@ -42,7 +42,7 @@
             leaveStartdate != ''
         "
       >
-        <p class="title-leave" v-if="dateLeave < remaindays || countUsers > 1">
+        <p class="title-leave" v-if="dateLeave < remaindays ">
           จำนวนวัน {{ dateLeave }} วัน
         </p>
         <p
@@ -110,7 +110,7 @@
       </a-upload>
     </div>
 
-    <div v-if="status === '1'">
+    <div v-if="countUsers > 1">
       <p class="title-leave"><span class="Highlight">* </span> Admin ลาให้</p>
       <a-select
         mode="multiple"
@@ -152,10 +152,11 @@
           }`
         "
         :disabled="
-          Timeperiod == '' &&
-            leaveStartdate == '' &&
-            leaveEnddate == '' &&
-            detailLeave == ''
+          Timeperiod == '' ||
+            leaveStartdate == '' ||
+            leaveEnddate == '' ||
+            detailLeave == ''|| 
+            dateLeave > remaindays
         "
         >ส่ง</a-button
       >
@@ -202,6 +203,9 @@ export default defineComponent({
     countUsers: 0 as number,
     allUsers: [] as object[],
     leaveList: [] as string[],
+    startDate:"" as string,
+    endDate:"" as string,
+    nameLeaves:"" as string
   }),
   methods: {
     addListleave(value: string | object[] | any) {
@@ -242,10 +246,12 @@ export default defineComponent({
       this.leaveEnddate = dateString;
       const dateStartAll = this.leaveStartdate.split("-");
       const dateStart = `${dateStartAll[2]}-${dateStartAll[1]}-${dateStartAll[0]}`;
+      this.startDate =dateStart
       const dateEndAll = this.leaveEnddate.split("-");
-      const endStart = `${dateEndAll[2]}-${dateEndAll[1]}-${dateEndAll[0]}`;
+      const endDate = `${dateEndAll[2]}-${dateEndAll[1]}-${dateEndAll[0]}`;
+      this.endDate = endDate
       const startDateLeave = Date.parse(dateStart);
-      const endDateLeave = Date.parse(endStart);
+      const endDateLeave = Date.parse(endDate);
 
       if (this.typeTimeperiod === "เต็มวัน") {
         if (endDateLeave < startDateLeave) {
@@ -298,6 +304,10 @@ export default defineComponent({
           CountLeave: this.dateLeave,
           Leaveevent: this.detailLeave,
           leaveList: this.leaveList,
+          Leavefor:"admin"
+        }).then((response) => {
+          this.nameLeaves = response.data.responseBody
+          this.createEvents()
         });
       } else {
         axios.post(`${this.apiconfig}/api/Userrequest`, {
@@ -308,27 +318,38 @@ export default defineComponent({
           Until: this.leaveEnddate,
           CountLeave: this.dateLeave,
           Leaveevent: this.detailLeave,
+          Leavefor:"user"
+        }).then((response) => {
+          console.log(response);
+          
+          this.createEvents()
         });
       }
-
+    },
+    createEvents(){
       if (this.typeTimeperiod === "ครึ่งวัน(เช้า)") {
-        this.since = `${this.leaveStartdate}T09:00:00`;
-        this.until = `${this.leaveEnddate}T13:00:00`;
+        this.since = `${this.startDate}T09:00:00`;
+        this.until = `${this.endDate}T13:00:00`;
       } else if (this.typeTimeperiod === "ครึ่งวัน(บ่าย)") {
-        this.since = `${this.leaveStartdate}T13:00:00`;
-        this.until = `${this.leaveEnddate}T18:00:00`;
+        this.since = `${this.startDate}T13:00:00`;
+        this.until = `${this.endDate}T18:00:00`;
       } else {
-        this.since = `${this.leaveStartdate}T9:00:00`;
-        this.until = `${this.leaveEnddate}T18:00:00`;
+        this.since = `${this.startDate}T9:00:00`;
+        this.until = `${this.endDate}T18:00:00`;
       }
+      const summary = `${this.nameLeaves} [${this.typeleave}]`
 
       axios.post(`${this.apiconfig}/api/createEvents`, {
-        Sammary: this.typeleave,
+        Leaveevent: this.detailLeave,
+        lineId: this.lineId,
+        Sammary:summary ,
+        typeLeaves: this.typeLeaves,
         description: this.detailLeave,
         Since: this.since,
         Until: this.until,
       });
-    },
+
+    }
   },
   mounted() {
     getallUser().then((result) => (this.allUsers = result.data.users));
@@ -359,6 +380,7 @@ export default defineComponent({
       .then((response) => {
         if (response.data.responseCode === 200) {
           this.remaindays = response.data.responseBody.Sickleave;
+          this.nameLeaves = response.data.responseBody.name
         } else {
           this.remaindays = 5;
         }
